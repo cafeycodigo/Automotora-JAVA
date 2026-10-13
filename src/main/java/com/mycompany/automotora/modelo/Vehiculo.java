@@ -44,6 +44,20 @@ public class Vehiculo {
     }
 
     public void setCodigo(String codigo) {
+        if (codigo == null || codigo.length() != 8) {
+            throw new IllegalArgumentException(
+                    "El código debe tener exactamente 8 dígitos."
+            );
+        }
+
+        for (int i = 0; i < codigo.length(); i++) {
+            if (!Character.isDigit(codigo.charAt(i))) {
+                throw new IllegalArgumentException(
+                        "El código solo puede contener números."
+                );
+            }
+        }
+
         this.codigo = codigo;
     }
 
@@ -53,7 +67,7 @@ public class Vehiculo {
 
     public void setPatente(String patente) {
         patente = patente.trim().toUpperCase();
-        
+
         if (patente == null) {
             throw new IllegalArgumentException("La patente es obligatoria.");
         }
@@ -63,15 +77,16 @@ public class Vehiculo {
         }
 
         // VALIDAR QUE SEA DEL FORMATO AAAA12 Y AA1234
+        
+        boolean esPatenteValida = false;
+        
         if (Character.isLetter(patente.charAt(0))
                 && Character.isLetter(patente.charAt(1))
                 && Character.isLetter(patente.charAt(2))
                 && Character.isLetter(patente.charAt(3))
                 && Character.isDigit(patente.charAt(4))
                 && Character.isDigit(patente.charAt(5))) {
-            throw new IllegalArgumentException(
-                    "La patente debe tener formato AAAA12 o AA1234."
-            );
+            esPatenteValida = true;
         }
 
         if (Character.isLetter(patente.charAt(0))
@@ -80,6 +95,10 @@ public class Vehiculo {
                 && Character.isDigit(patente.charAt(3))
                 && Character.isDigit(patente.charAt(4))
                 && Character.isDigit(patente.charAt(5))) {
+            esPatenteValida = true;
+        }
+        
+        if (!esPatenteValida) {
             throw new IllegalArgumentException(
                     "La patente debe tener formato AAAA12 o AA1234."
             );
@@ -93,6 +112,12 @@ public class Vehiculo {
     }
 
     public void setMarca(String marca) {
+        marca = marca.trim();
+
+        if (marca == null) {
+            throw new IllegalArgumentException("La marca es obligatoria.");
+        }
+
         this.marca = marca;
     }
 
@@ -101,6 +126,16 @@ public class Vehiculo {
     }
 
     public void setModelo(String modelo) {
+        modelo = modelo.trim();
+
+        if (modelo == null) {
+            throw new IllegalArgumentException("La modelo es obligatoria.");
+        }
+        
+        if (modelo.length() < 2) {
+             throw new IllegalArgumentException("Falta mas información del modelo.");
+        }
+
         this.modelo = modelo;
     }
 
@@ -109,6 +144,10 @@ public class Vehiculo {
     }
 
     public void setAnio(int anio) {
+        if (anio < 2015 ) {
+             throw new IllegalArgumentException("Vehiculos anterior al año 2015 no estan permitidos.");
+        }
+        
         this.anio = anio;
     }
 

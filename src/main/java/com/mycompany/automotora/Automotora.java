@@ -15,6 +15,18 @@ public class Automotora {
 
     public static void main(String[] args) {
         System.out.println("Hello World!");
+        
+        //String codigo = "a";
+        //Vehiculo vTestCodigo = new Vehiculo(codigo, "ABCD12", "Ferrari", "F8 Tributo", 2016, false, true, "Superdeportivo", "Rojo Furia (Rosso Corsa)", "Secuencial F1");
+      
+         
+//        String patente = "1";
+//        Vehiculo vTestPatente = new Vehiculo("12345678", patente, "Ferrari", "F8 Tributo", 2016, false, true, "Superdeportivo", "Rojo Furia (Rosso Corsa)", "Secuencial F1");
+      
+//        int anio = 2000;
+//        Vehiculo vTestAnio = new Vehiculo("12345678", "ABCD12", "Ferrari", "F8 Tributo", anio, false, true, "Superdeportivo", "Rojo Furia (Rosso Corsa)", "Secuencial F1");
+
+  
 
         ArrayList<Vehiculo> listaVehiculos = new ArrayList<>();
 

@@ -92,6 +92,7 @@ public class VehiculoVista extends javax.swing.JFrame {
         listVehiculos = new javax.swing.JList<>();
         txtCodigo = new javax.swing.JTextField();
         txtPatente = new javax.swing.JTextField();
+        txtMensaje = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -150,6 +151,15 @@ public class VehiculoVista extends javax.swing.JFrame {
             }
         });
 
+        txtAnio.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtAnioKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtAnioKeyTyped(evt);
+            }
+        });
+
         lblElectrico.setText("Electrico");
 
         lblTipo.setText("Tipo");
@@ -173,6 +183,16 @@ public class VehiculoVista extends javax.swing.JFrame {
             public String getElementAt(int i) { return strings[i]; }
         });
         jScrollPane1.setViewportView(listVehiculos);
+
+        txtCodigo.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtCodigoKeyTyped(evt);
+            }
+        });
+
+        txtMensaje.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
+        txtMensaje.setForeground(new java.awt.Color(255, 51, 51));
+        txtMensaje.setText("mensaje:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -228,10 +248,16 @@ public class VehiculoVista extends javax.swing.JFrame {
                                 .addComponent(btnEliminar)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(btnListar))
-                            .addComponent(btnBuscar)
-                            .addComponent(btnAgregar)
-                            .addComponent(btnActualizar)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnBuscar)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btnAgregar)
+                                        .addGap(52, 52, 52)
+                                        .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(btnActualizar)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 78, Short.MAX_VALUE)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -247,7 +273,8 @@ public class VehiculoVista extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblCodigo)
                     .addComponent(btnAgregar)
-                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMensaje, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPatente)
@@ -299,7 +326,7 @@ public class VehiculoVista extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(rbDirect))
                     .addComponent(jScrollPane1))
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
 
         pack();
@@ -525,6 +552,50 @@ public class VehiculoVista extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
+    private void txtCodigoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCodigoKeyTyped
+        char caracter = evt.getKeyChar();
+        
+        if (!Character.isDigit(caracter)) {
+            evt.consume();
+        }
+        
+        if (txtCodigo.getText().length() >= 8) {
+            evt.consume();
+        }
+        
+    }//GEN-LAST:event_txtCodigoKeyTyped
+
+    private void txtAnioKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAnioKeyTyped
+        char caracter = evt.getKeyChar();
+        
+        if (!Character.isDigit(caracter)) {
+            evt.consume();
+        }
+        
+        if (txtAnio.getText().length() >= 4) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_txtAnioKeyTyped
+
+    private void txtAnioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAnioKeyReleased
+        String texto = txtAnio.getText();
+
+        if (texto.length() != 4) {
+            txtMensaje.setText("El año es válido desde 2015 al 2026");
+            return;
+        }
+        
+        int anio = Integer.parseInt(texto);
+        
+        if (anio <= 2015 || anio >= 2026) {
+            txtMensaje.setText("Año no válido");
+        } else {
+            txtMensaje.setText("");
+        }
+        
+        
+    }//GEN-LAST:event_txtAnioKeyReleased
+
     private void limpiarCampos() {
         txtCodigo.setText("");
         txtPatente.setText("");
@@ -603,6 +674,7 @@ public class VehiculoVista extends javax.swing.JFrame {
     private javax.swing.JTextField txtAnio;
     private javax.swing.JTextField txtCodigo;
     private javax.swing.JTextField txtMarca;
+    private javax.swing.JLabel txtMensaje;
     private javax.swing.JTextField txtModelo;
     private javax.swing.JTextField txtPatente;
     // End of variables declaration//GEN-END:variables
