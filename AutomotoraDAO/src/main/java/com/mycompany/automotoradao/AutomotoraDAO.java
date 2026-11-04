@@ -29,7 +29,7 @@ public class AutomotoraDAO {
         Vehiculo v9 = new Vehiculo("88202609", "QWER44", "Ferrari", "Roma", 2022, false, true, "Convertible / Roadster", "Negro Metálico (Nero Daytona)", "Automática de Doble Embrague");
         Vehiculo v10 = new Vehiculo("88202610", "TYUI55", "Tesla", "Model X Plaid", 2026, true, true, "SUV de Lujo", "Blanco Diamante", "Direct-Drive Eléctrica");
 
-        // GUARDAR
+        // CREATE - GUARDAR
         dao.guardar(v1);
         dao.guardar(v2);
         dao.guardar(v3);
@@ -39,50 +39,164 @@ public class AutomotoraDAO {
         dao.guardar(v7);
         dao.guardar(v8);
         dao.guardar(v9);
-        
+
         if (dao.guardar(v10)) {
             System.out.println("\n\nSe ha guardado correctamente " + v10.getPatente() + "\n\n");
         }
+        // VOLVER A GUARDAR EL MISMO VEHICULO
+        if (dao.guardar(v10)) {
+            System.out.println("\n\nSe ha guardado correctamente " + v10.getPatente() + "\n\n");
+        } else {
+            System.out.println("ERROR: No ha guardado " + v10.getPatente() + "\n\n");
+        }
 
-        // LISTAR
+        // SHOW GENERAL - LISTAR
         System.out.println("\n *********** LISTADO ****************** \n");
         for (Vehiculo vehiculo : dao.listar()) {
             System.out.println("Vehiculo -> " + vehiculo.toString());
         }
-        
-        
-        // BUSCAR
-        String patente =  "ABCD12";
+        System.out.println("\n *********** LISTADO ****************** \n");
+
+        // READ - BUSCAR
+        String patente = "ABCD12";
         Vehiculo vEncontrar = dao.buscar(patente);
-        
+
         if (vEncontrar == null) {
             System.out.println("Vehiculo no encontrado");
+        } else {
+            System.out.println("Vehiculo encontrado -> " + vEncontrar.toString());
         }
-        System.out.println("Vehiculo no encontrado");
-        
-        salto();
-        
-        
 
+        // UPDATE  - ACTUALIZAR
+        String patenteActualizar = "PRST90";
+        Vehiculo vEncontrarParaActualizar = dao.buscar(patenteActualizar);
 
-//        
-//        VehiculoVista vista = new VehiculoVista();
-//        vista.setVisible(true);
+        System.out.println("El color del vehiculo es " + vEncontrarParaActualizar.getColor());
 
+        //Vehiculo v5 = new Vehiculo("88202605", "PRST90", "Lamborghini", "Huracán EVO", 2023, false, true, "Superdeportivo", "Negro Metálico (Nero Daytona)", "Secuencial F1");
+        vEncontrarParaActualizar.setColor("Amarillo");
+
+        if (dao.actualizar(vEncontrarParaActualizar)) {
+            System.out.println("Se ha actualizado [" + patenteActualizar + "]");
+        } else {
+            System.out.println("No se ha actualizado");
+        }
+
+        // SHOW GENERAL - LISTAR
+        System.out.println("\n *********** LISTADO ****************** \n");
+        for (Vehiculo vehiculo : dao.listar()) {
+            System.out.println("Vehiculo -> " + vehiculo.toString());
+        }
+        System.out.println("\n *********** LISTADO ****************** \n");
+
+        // DELETE - ELMINIAR
+        String patenteEliminar = "PRST90";
+
+        if (dao.eliminar(patenteEliminar)) {
+            System.out.println("Se ha eliminado [" + patenteEliminar + "]");
+        } else {
+            System.out.println("Error no se ha podido eliminar");
+        }
+
+        // SHOW GENERAL - LISTAR
+        System.out.println("\n *********** LISTADO ****************** \n");
+        for (Vehiculo vehiculo : dao.listar()) {
+            System.out.println("Vehiculo -> " + vehiculo.toString());
+        }
+        System.out.println("\n *********** LISTADO ****************** \n");
+
+        // ==========================================
+        // MÉTODOS DE CONSULTA Y REPORTES ("PREGUNTAS")
+        // ==========================================
+        // Conteo total
+        System.out.println("Cantidad total de vehículos: " + dao.cantidadTotal());
+
+        // 1 y 2. Eléctricos (Listado y Conteo)
+        System.out.println("\n--- Vehículos Eléctricos ---");
+        System.out.println("Cantidad de eléctricos: " + dao.contarElectricos());
+        for (Vehiculo v : dao.listarElectricos()) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " (" + v.getPatente() + ")");
+        }
+
+        // 3. Disponibles
+        System.out.println("\n--- Vehículos Disponibles ---");
+        for (Vehiculo v : dao.listarDisponibles()) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " [Patente: " + v.getPatente() + "]");
+        }
+
+        // 4. Buscar por Marca
+        String marcaBuscada = "Toyota";
+        System.out.println("\n--- Búsqueda por marca: " + marcaBuscada + " ---");
+        for (Vehiculo v : dao.buscarPorMarca(marcaBuscada)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " Año: " + v.getAnio());
+        }
+
+        // 5. Buscar por Tipo
+        String tipoBuscado = "SUV";
+        System.out.println("\n--- Búsqueda por tipo: " + tipoBuscado + " ---");
+        for (Vehiculo v : dao.buscarPorTipo(tipoBuscado)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " (" + v.getTipo() + ")");
+        }
+
+        // 7. Buscar por Transmisión
+        String transmisionBuscada = "Automática";
+        System.out.println("\n--- Búsqueda por transmisión: " + transmisionBuscada + " ---");
+        for (Vehiculo v : dao.buscarPorTransmision(transmisionBuscada)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " - " + v.getTransmision());
+        }
+
+        // 8. Listar desde un año en adelante
+        int anioMinimo = 2022;
+        System.out.println("\n--- Vehículos del año " + anioMinimo + " en adelante ---");
+        for (Vehiculo v : dao.listarDesdeAnio(anioMinimo)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " (" + v.getAnio() + ")");
+        }
+
+        // 9. Buscar por Color
+        String colorBuscado = "Rojo";
+        System.out.println("\n--- Búsqueda por color: " + colorBuscado + " ---");
+        for (Vehiculo v : dao.buscarPorColor(colorBuscado)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo() + " (" + v.getColor() + ")");
+        }
+
+        // 10. Contar por disponibilidad (true o false)
+        System.out.println("\n--- Estadísticas de Disponibilidad ---");
+        System.out.println("Disponibles (true): " + dao.contarPorDisponibilidad(true));
+        System.out.println("No disponibles (false): " + dao.contarPorDisponibilidad(false));
+
+        // 11 y 12. Más antiguo y más nuevo
+        System.out.println("\n--- Extremos del Inventario ---");
+        Vehiculo antiguo = dao.obtenerVehiculoMasAntiguo();
+        if (antiguo != null) {
+            System.out.println("Vehículo más antiguo: " + antiguo.getMarca() + " " + antiguo.getModelo() + " (" + antiguo.getAnio() + ")");
+        }
+
+        Vehiculo nuevo = dao.obtenerVehiculoMasNuevo();
+        if (nuevo != null) {
+            System.out.println("Vehículo más nuevo: " + nuevo.getMarca() + " " + nuevo.getModelo() + " (" + nuevo.getAnio() + ")");
+        }
+
+        // 13. Búsqueda parcial por modelo
+        String textoParcial = "Mod";
+        System.out.println("\n--- Búsqueda parcial de modelo con: '" + textoParcial + "' ---");
+        for (Vehiculo v : dao.buscarPorModeloParcial(textoParcial)) {
+            System.out.println(" - " + v.getMarca() + " " + v.getModelo());
+        }
+
+        System.out.println("\n==========================================");
     }
-    
-    
+
     public static void salto() {
         System.out.println("");
     }
-    
+
     public static void linea(String t) {
         if (!t.isEmpty()) {
             t = " " + t + " ";
         }
         System.out.println("*********" + t + "**********");
     }
-    
+
     public static void imprimir(String t) {
         System.out.println(t);
     }
