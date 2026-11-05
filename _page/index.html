@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Una guía sencilla del proyecto Automotora Java y su implementación con DAO.">
+  <title>Modelo · Automotora Java</title>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="guia.css">
+  <script src="proyectos.js" defer></script>
+  <script src="contextos.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-lesson="modelo" class="bg-paper font-sans text-ink antialiased">
+  <header class="guide-header border-b border-ink/10">
+    <nav class="guide-nav mx-auto grid max-w-6xl items-center gap-3 px-4 pt-4 sm:px-6" aria-label="Navegación principal">
+      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white" aria-hidden="true">A</span>
+        <span><span id="context-brand">Automotora</span> <span class="text-ink/45">/ Java</span></span>
+      </a>
+      <div class="lesson-links grid gap-1 rounded-2xl bg-paper p-1 text-sm text-ink/75">
+        <a id="nav-model" aria-current="page" data-page="index.html" href="index.html">01 Modelo</a>
+        <a id="nav-project" data-page="proyecto.html" href="proyecto.html">02 DAO</a>
+        <a id="nav-tests" data-page="junit.html" href="junit.html">03 JUnit</a>
+        <a id="nav-db" data-page="base-datos.html" href="base-datos.html">04 Datos</a>
+      </div>
+      <span class="guide-stack rounded-full bg-paper px-3 py-1.5 font-mono text-xs text-ink/75">Java · Maven</span>
+    </nav>
+    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6" aria-label="Contexto de aprendizaje">
+      <p class="text-xs font-semibold text-ink/75">Contexto del ejemplo</p>
+      <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+    </aside>
+  </header>
+
+  <main>
+    <section class="mx-auto grid max-w-6xl gap-8 px-4 sm:px-6 pb-14 pt-10 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:pb-20">
+      <div>
+        <p class="mb-6 flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-ink/55">
+          <span class="h-2 w-2 rounded-full bg-lime"></span>
+          Lección 01 · El modelo
+        </p>
+        <h1 id="context-title" class="max-w-2xl text-4xl font-bold leading-[1.06] tracking-[-0.055em] sm:text-6xl">
+          Un inventario de autos, <span class="text-ink/40">paso a paso.</span>
+        </h1>
+        <p id="context-description" class="mt-6 max-w-xl text-lg leading-8 text-ink/65">
+          Primero conocerás el modelo de vehículo, sus validaciones y cómo se crea desde <code class="font-mono text-base">main</code>. Después, veremos cómo el patrón DAO organiza y mejora el acceso al inventario.
+        </p>
+        <a href="#primeros-pasos" class="mt-8 inline-flex items-center gap-3 rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-accent/90">
+          Empezar la guía <span aria-hidden="true">↓</span>
+        </a>
+      </div>
+
+      <div class="relative overflow-hidden rounded-3xl bg-ink p-7 text-white sm:p-9">
+        <div class="relative">
+          <div class="flex items-center justify-between border-b border-white/15 pb-5">
+            <span class="font-mono text-xs uppercase tracking-widest text-white/55">Ficha de ejemplo</span>
+            <span id="sample-badge" class="rounded-full bg-lime px-3 py-1 font-mono text-[11px] font-medium text-ink">DISPONIBLE</span>
+          </div>
+          <p id="sample-key" class="mt-8 font-mono text-sm text-lime">ABCD12 · 2023</p>
+          <h2 id="sample-name" class="mt-2 text-3xl font-semibold tracking-tight">Ferrari F8 Tributo</h2>
+          <div id="sample-fields" class="mt-8 grid grid-cols-2 gap-3">
+            <div class="rounded-2xl bg-white/[0.07] p-4">
+              <p class="font-mono text-[11px] uppercase tracking-wider text-white/45">Tipo</p>
+              <p class="mt-2 text-sm">Superdeportivo</p>
+            </div>
+            <div class="rounded-2xl bg-white/[0.07] p-4">
+              <p class="font-mono text-[11px] uppercase tracking-wider text-white/45">Transmisión</p>
+              <p class="mt-2 text-sm">Secuencial F1</p>
+            </div>
+            <div class="rounded-2xl bg-white/[0.07] p-4">
+              <p class="font-mono text-[11px] uppercase tracking-wider text-white/45">Color</p>
+              <p class="mt-2 text-sm">Rojo furia</p>
+            </div>
+            <div class="rounded-2xl bg-white/[0.07] p-4">
+              <p class="font-mono text-[11px] uppercase tracking-wider text-white/45">Energía</p>
+              <p class="mt-2 text-sm">Combustión</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="primeros-pasos" class="scroll-mt-8 border-t border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+        <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Primeros pasos</p>
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight">De una variable a una ficha</h2>
+        <ol class="mt-8 grid gap-4 lg:grid-cols-3">
+          <li class="min-w-0 rounded-2xl border border-ink/10 p-5">
+            <h3 class="font-semibold">1. Declara una variable</h3>
+            <p id="intro-variable" class="mt-3 text-sm leading-6 text-ink/70"></p>
+          </li>
+          <li class="min-w-0 rounded-2xl border border-ink/10 p-5">
+            <h3 class="font-semibold">2. Define los atributos del modelo</h3>
+            <p id="intro-attributes" class="mt-3 text-sm leading-6 text-ink/70"></p>
+          </li>
+          <li class="min-w-0 rounded-2xl border border-ink/10 p-5">
+            <h3 class="font-semibold">3. Crea y usa un objeto</h3>
+            <p id="intro-object" class="mt-3 text-sm leading-6 text-ink/70"></p>
+          </li>
+        </ol>
+        <div class="mt-6 overflow-hidden rounded-xl bg-ink text-white">
+          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 px-4 py-3">
+            <div id="model-tabs" role="tablist" aria-label="Ejemplo Java" class="flex flex-wrap gap-1">
+              <button type="button" id="tab-class" role="tab" aria-controls="model-panel" class="rounded-lg px-3 py-2 text-sm">Clase</button>
+              <button type="button" id="tab-main" role="tab" aria-controls="model-panel" class="rounded-lg px-3 py-2 font-mono text-sm">main</button>
+              <button type="button" id="tab-full" role="tab" aria-controls="model-panel" class="rounded-lg px-3 py-2 text-sm">Archivo completo</button>
+              <button type="button" id="tab-output" role="tab" aria-controls="model-panel" class="rounded-lg px-3 py-2 text-sm">Salida</button>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="copy-model-code" class="rounded-lg border border-white/30 px-3 py-2 text-xs font-medium hover:bg-white/10">Copiar código</button>
+              <button type="button" id="run-model-code" class="rounded-lg bg-lime px-3 py-2 text-xs font-semibold text-ink">Ejecutar simulación</button>
+            </div>
+          </div>
+          <div id="model-panel" role="tabpanel" tabindex="0">
+            <pre id="model-source" class="overflow-x-auto p-4 text-xs leading-6 sm:text-sm"><code id="model-code"></code></pre>
+            <div id="model-console" class="space-y-4 p-4 sm:p-6" hidden>
+              <p class="font-mono text-xs uppercase tracking-widest text-white/65">Simulación de main</p>
+              <ol id="model-trace" class="list-decimal space-y-2 break-words pl-5 text-sm text-white/80"></ol>
+              <pre id="model-output" role="status" class="whitespace-pre-wrap break-words rounded-lg bg-white/10 p-4 font-mono text-sm text-lime"></pre>
+            </div>
+          </div>
+        </div>
+        <p id="model-copy-status" role="status" class="mt-2 text-xs text-ink/70"></p>
+        <a href="#validaciones" class="mt-5 inline-block text-sm font-semibold underline">Siguiente paso · validar la ficha ↓</a>
+      </div>
+    </section>
+
+    <section id="validaciones" class="scroll-mt-8 border-y border-ink/10 bg-paper">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+        <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Paso 4 · Validar</p>
+        <h2 class="mt-4 text-3xl font-semibold tracking-tight">¿Cuándo es válida una ficha?</h2>
+        <p id="demo-rule" class="mt-3 max-w-2xl leading-7 text-ink/65"></p>
+        <ul id="model-rules" class="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-ink/75"></ul>
+        <details class="mt-6 max-w-2xl rounded-2xl border border-ink/10 bg-white shadow-sm p-4">
+          <summary id="model-question" class="cursor-pointer font-semibold"></summary>
+          <p id="model-answer" class="mt-3 text-sm leading-6 text-ink/75"></p>
+        </details>
+        <a data-page="proyecto.html" href="proyecto.html" class="mt-8 inline-flex rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white">Continuar al DAO →</a>
+      </div>
+    </section>
+    <div id="vehicle-guide">
+
+    <section id="modelo" class="scroll-mt-8 border-y border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-24">
+        <div class="max-w-2xl">
+          <p class="font-mono text-xs uppercase tracking-[0.18em] text-ink/45">01 / El modelo primero</p>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Un vehículo es una ficha con reglas.</h2>
+          <p class="mt-5 text-base leading-7 text-ink/65">
+            La clase <code class="rounded bg-paper px-1.5 py-0.5 font-mono text-sm text-ink">Vehiculo</code> representa cada auto del inventario. Reúne sus datos —código, patente, marca, modelo, año, tipo, color, transmisión y estados— y valida algunos de ellos antes de aceptarlos.
+          </p>
+        </div>
+
+        <div class="mt-12 grid gap-4 md:grid-cols-3">
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <span class="font-mono text-xs text-ink/40">Validación 01</span>
+            <h3 class="mt-4 text-lg font-semibold">Código</h3>
+            <p class="mt-2 text-sm leading-6 text-ink/60">Debe tener exactamente 8 caracteres y todos deben ser dígitos.</p>
+          </article>
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <span class="font-mono text-xs text-ink/40">Validación 02</span>
+            <h3 class="mt-4 text-lg font-semibold">Patente</h3>
+            <p class="mt-2 text-sm leading-6 text-ink/60">Se convierte a mayúsculas y debe tener 6 caracteres: formato AAAA12 o AA1234.</p>
+          </article>
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <span class="font-mono text-xs text-ink/40">Validación 03</span>
+            <h3 class="mt-4 text-lg font-semibold">Modelo y año</h3>
+            <p class="mt-2 text-sm leading-6 text-ink/60">El modelo debe tener al menos 2 caracteres y el año no puede ser anterior a 2015.</p>
+          </article>
+        </div>
+
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          <article class="overflow-hidden rounded-2xl bg-ink text-white">
+            <div class="border-b border-white/10 px-5 py-3 font-mono text-xs text-white/50">Vehiculo.java · constructor</div>
+            <pre class="overflow-x-auto p-5 text-xs leading-6 sm:text-sm"><code>public Vehiculo(String codigo, String patente,
+        String marca, String modelo, int anio,
+        boolean electrico, boolean disponible,
+        String tipo, String color, String transmision) {
+    setCodigo(codigo);
+    setPatente(patente);
+    setMarca(marca);
+    setModelo(modelo);
+    setAnio(anio);
+    setElectrico(electrico);
+    setDisponible(disponible);
+    setTipo(tipo);
+    setColor(color);
+    setTransmision(transmision);
+}</code></pre>
+          </article>
+          <div class="space-y-4">
+            <h3 class="text-xl font-semibold tracking-tight">¿Qué ocurre al llamar a <code class="font-mono text-lg">new Vehiculo(...)</code>?</h3>
+            <ol class="space-y-3 text-sm leading-6 text-ink/65">
+              <li class="flex gap-3"><span class="font-mono text-ink/40">1.</span><span>Java entra al constructor con los 10 valores que recibió.</span></li>
+              <li class="flex gap-3"><span class="font-mono text-ink/40">2.</span><span>El constructor llama a cada setter; no asigna esos campos directamente.</span></li>
+              <li class="flex gap-3"><span class="font-mono text-ink/40">3.</span><span>Cada setter comprueba o prepara su valor y lo guarda en <code class="font-mono">this.campo</code>.</span></li>
+              <li class="flex gap-3"><span class="font-mono text-ink/40">4.</span><span>Si una regla falla, el setter lanza una excepción: la creación no termina normalmente y el objeto no llega a asignarse a la variable.</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-4 md:grid-cols-2">
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <h3 class="font-semibold">Código: comprobación en dos pasos</h3>
+            <pre class="mt-4 overflow-x-auto rounded-xl bg-paper p-4 font-mono text-xs leading-5"><code>if (codigo == null || codigo.length() != 8) {
+                throw new IllegalArgumentException(
+                    "El código debe tener exactamente 8 dígitos.");
+            }
+            for (int i = 0; i &lt; codigo.length(); i++) {
+                if (!Character.isDigit(codigo.charAt(i))) {
+                    throw new IllegalArgumentException(
+                        "El código solo puede contener números.");
+    }
+}
+this.codigo = codigo;</code></pre>
+            <p class="mt-3 text-sm leading-6 text-ink/60">Primero rechaza un valor nulo o de longitud distinta de 8. Después revisa cada carácter. Solo si todas las comprobaciones pasan asigna el dato al campo.</p>
+          </article>
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <h3 class="font-semibold">Patente: normalizar y comparar posiciones</h3>
+            <pre class="mt-4 overflow-x-auto rounded-xl bg-paper p-4 font-mono text-xs leading-5"><code>patente = patente.trim().toUpperCase();
+boolean valida = false;
+if (Character.isLetter(patente.charAt(0))
+        &amp;&amp; Character.isLetter(patente.charAt(1))
+        &amp;&amp; Character.isLetter(patente.charAt(2))
+        &amp;&amp; Character.isLetter(patente.charAt(3))
+        &amp;&amp; Character.isDigit(patente.charAt(4))
+        &amp;&amp; Character.isDigit(patente.charAt(5))) {
+    valida = true; // AAAA12
+}
+if (Character.isLetter(patente.charAt(0))
+        &amp;&amp; Character.isLetter(patente.charAt(1))
+        &amp;&amp; Character.isDigit(patente.charAt(2))
+        &amp;&amp; Character.isDigit(patente.charAt(3))
+        &amp;&amp; Character.isDigit(patente.charAt(4))
+        &amp;&amp; Character.isDigit(patente.charAt(5))) {
+    valida = true; // AA1234
+}
+if (!valida) {
+    throw new IllegalArgumentException(
+        "La patente debe tener formato AAAA12 o AA1234.");
+}
+this.patente = patente;</code></pre>
+            <p class="mt-3 text-sm leading-6 text-ink/60">Cada <code class="font-mono">charAt(posición)</code> lee una posición de la patente; <code class="font-mono">&amp;&amp;</code> exige que todas las posiciones tengan el tipo esperado. El primer bloque acepta 4 letras y 2 dígitos; el segundo, 2 letras y 4 dígitos. El método también comprueba antes que la longitud sea 6.</p>
+          </article>
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <h3 class="font-semibold">Modelo: limpiar y exigir información</h3>
+            <pre class="mt-4 overflow-x-auto rounded-xl bg-paper p-4 font-mono text-xs leading-5"><code>modelo = modelo.trim();
+if (modelo.length() &lt; 2) {
+    throw new IllegalArgumentException(
+        "Falta mas información del modelo.");
+}
+this.modelo = modelo;</code></pre>
+            <p class="mt-3 text-sm leading-6 text-ink/60">Un modelo como <code class="font-mono">" X "</code> queda como <code class="font-mono">"X"</code>, mide un carácter y se rechaza. Un texto de al menos dos caracteres se asigna.</p>
+          </article>
+          <article class="rounded-2xl border border-ink/10 p-6">
+            <h3 class="font-semibold">Año: comprobar el mínimo</h3>
+            <pre class="mt-4 overflow-x-auto rounded-xl bg-paper p-4 font-mono text-xs leading-5"><code>if (anio &lt; 2015) {
+                throw new IllegalArgumentException(
+                    "Vehiculos anterior al año 2015 no estan permitidos.");
+}
+this.anio = anio;</code></pre>
+            <p class="mt-3 text-sm leading-6 text-ink/60">El año 2014 produce una excepción; 2015 o un año posterior se guarda. Los booleanos y los campos tipo, color y transmisión se asignan sin validaciones adicionales en sus setters actuales.</p>
+          </article>
+        </div>
+
+        <div class="mt-10 grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <h3 class="text-xl font-semibold tracking-tight">¿Dónde se aplican las reglas?</h3>
+            <p class="mt-3 text-sm leading-6 text-ink/60">
+              El constructor recibe todos los datos y llama a los setters. Por eso, al crear el objeto desde <code class="font-mono">main</code>, las validaciones del modelo se ejecutan automáticamente. Si un dato validado no cumple la regla, se lanza una excepción <code class="font-mono">IllegalArgumentException</code>.
+            </p>
+          </div>
+          <div class="overflow-hidden rounded-2xl bg-ink text-white">
+            <div class="border-b border-white/10 px-5 py-3 font-mono text-xs text-white/50">AutomotoraDAO.java · main</div>
+            <pre class="overflow-x-auto p-5 text-sm leading-6"><code><span class="text-white/40">// Crear el DAO, tal como se hace primero en main</span>
+VehiculoDAO dao = new VehiculoDAO();
+
+<span class="text-white/40">// Crear el objeto: el constructor valida sus datos</span>
+Vehiculo v1 = new Vehiculo(
+    "88202601", "ABCD12", "Ferrari", "F8 Tributo",
+    2023, false, true, "Superdeportivo",
+    "Rojo Furia", "Secuencial F1"
+);
+
+<span class="text-white/40">// Entregarle el vehículo al DAO</span>
+boolean guardado = dao.guardar(v1);
+System.out.println(guardado); <span class="text-white/40">// true</span></code></pre>
+          </div>
+        </div>
+        <div class="mt-8 rounded-2xl bg-paper p-6">
+          <p class="text-sm leading-6 text-ink/65">
+            Lectura del ejemplo: <code class="font-mono">new Vehiculo(...)</code> llama al constructor; <code class="font-mono">v1</code> guarda la referencia al objeto creado; <code class="font-mono">new VehiculoDAO()</code> crea un inventario vacío; <code class="font-mono">dao.guardar(v1)</code> pide añadirlo. El resultado <code class="font-mono">true</code> significa que se agregó; <code class="font-mono">false</code> significa que el DAO no lo aceptó.
+          </p>
+        </div>
+        <div class="mt-4 rounded-2xl border border-amber-900/15 bg-amber-50 p-6">
+          <h3 class="font-semibold text-amber-950">Detalle importante sobre los valores nulos</h3>
+          <p class="mt-2 text-sm leading-6 text-amber-950/75">
+            En el código actual, <code class="font-mono">setPatente</code>, <code class="font-mono">setMarca</code> y <code class="font-mono">setModelo</code> llaman a <code class="font-mono">trim()</code> antes de comprobar si el parámetro es <code class="font-mono">null</code>. Por eso, si reciben <code class="font-mono">null</code>, Java lanza <code class="font-mono">NullPointerException</code> antes del mensaje <code class="font-mono">"... es obligatoria"</code>. Es una diferencia entre lo que esos métodos parecen querer validar y lo que realmente hacen.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-ink/10">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between">
+      <p>Laboratorio de modelos y DAO en Java · basado en Automotora</p>
+      <p>Guía de Java · Modelo, DAO, JUnit y bases de datos</p>
+    </div>
+  </footer>
+</body>
+</html>

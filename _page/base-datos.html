@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Una guía sencilla del proyecto Automotora Java y su implementación con DAO.">
+  <title>Base de datos · Automotora Java</title>
+  <link rel="stylesheet" href="tailwind.css">
+  <link rel="stylesheet" href="guia.css">
+  <script src="proyectos.js" defer></script>
+  <script src="contextos.js" defer></script>
+  <script src="base-datos.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-lesson="base-datos" class="bg-paper font-sans text-ink antialiased">
+  <header class="guide-header border-b border-ink/10">
+    <nav class="guide-nav mx-auto grid max-w-6xl items-center gap-3 px-4 pt-4 sm:px-6" aria-label="Navegación principal">
+      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white" aria-hidden="true">A</span>
+        <span><span id="context-brand">Automotora</span> <span class="text-ink/45">/ Java</span></span>
+      </a>
+      <div class="lesson-links grid gap-1 rounded-2xl bg-paper p-1 text-sm text-ink/75">
+        <a id="nav-model" data-page="index.html" href="index.html">01 Modelo</a>
+        <a id="nav-project" data-page="proyecto.html" href="proyecto.html">02 DAO</a>
+        <a id="nav-tests" data-page="junit.html" href="junit.html">03 JUnit</a>
+        <a id="nav-db" aria-current="page" data-page="base-datos.html" href="base-datos.html">04 Datos</a>
+      </div>
+      <span class="guide-stack rounded-full bg-paper px-3 py-1.5 font-mono text-xs text-ink/75">Java · Maven</span>
+    </nav>
+    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6" aria-label="Contexto de aprendizaje">
+      <p class="text-xs font-semibold text-ink/75">Contexto del ejemplo</p>
+      <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+    </aside>
+  </header>
+
+  <main>
+    <section id="conexion" class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
+      <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Lección 04 · Conexión a base de datos</p>
+      <h1 id="context-title" class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Conecta Java con una base de datos</h1>
+      <p id="context-description" class="mt-5 max-w-2xl text-lg leading-8 text-ink/70"></p>
+      <div class="mt-6 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
+        <label for="db-provider" class="block text-sm font-semibold">Elige tu base de datos</label>
+        <select id="db-provider" class="mt-2 rounded-lg border border-ink/20 bg-paper px-3 py-2 text-sm" aria-describedby="db-provider-help">
+          <option value="mysql">MySQL local</option>
+          <option value="supabase">Supabase (PostgreSQL)</option>
+        </select>
+        <p id="db-provider-help" class="mt-2 text-sm leading-6">Usa MySQL si tienes un servidor local o Supabase si tienes un proyecto PostgreSQL alojado. La selección cambia el código y los pasos de esta lección.</p>
+        <p class="mt-2 text-sm leading-6">Dependencia en <code>pom.xml</code> · <code id="db-driver" class="break-all"></code>. Al abrir o compilar el proyecto, Maven descarga el controlador.</p>
+      </div>
+      <ol class="mt-8 grid gap-4 md:grid-cols-2">
+        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>1. Crear el proyecto Maven y la tabla</strong><p id="db-table-description" class="mt-2 text-sm leading-6"></p></li>
+        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>2. Cargar el controlador y abrir la conexión</strong><p class="mt-2 text-sm leading-6">Copia la dependencia al bloque <code>&lt;dependencies&gt;</code> de tu <code>pom.xml</code>. Maven pone el controlador al alcance de Java y <code>ConexionBD</code> abre la conexión con <code>DriverManager</code>.</p></li>
+        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>3. Guardar y recuperar desde el DAO</strong><p class="mt-2 text-sm leading-6"><code>PreparedStatement</code> asigna un valor a cada <code>?</code>. <code>ResultSet</code> permite reconstruir un objeto con los datos de una fila. <code>try-with-resources</code> cierra los recursos.</p></li>
+        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>4. Conectar la vista Swing</strong><p class="mt-2 text-sm leading-6">Como siguiente ejercicio, crea un <code>JFrame</code> en NetBeans. El formulario construye el objeto, los botones llaman al DAO y un <code>JTable</code> muestra el resultado de <code>listar()</code>.</p></li>
+      </ol>
+      <p class="mt-6 text-sm font-semibold">Flujo de datos · Vista o main → DAO → ConexionBD → <span id="db-engine">MySQL</span></p>
+      <div class="mt-6 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
+        <h2 class="text-xl font-semibold">Estructura de carpetas</h2>
+        <p class="mt-2 text-sm leading-6">Guarda <code>pom.xml</code> y <code>esquema.sql</code> en la raíz del proyecto. Los archivos Java van en <code>src/main/java</code>, en la carpeta que corresponde al <code>package</code> de cada clase.</p>
+        <p class="mt-3 text-sm leading-6">Cuando agregues la vista Swing, créala en <code>src/main/java/cl/automotora/vista</code>. Las pruebas JUnit van bajo <code>src/test/java</code>.</p>
+      </div>
+        <div class="ide mt-6">
+          <aside class="ide-tree" aria-labelledby="project-tree-heading">
+            <h3 id="project-tree-heading" class="ide-heading">Projects</h3>
+            <div id="project-files" role="group" aria-label="Archivos del proyecto"></div>
+          </aside>
+          <div class="min-w-0">
+            <div class="ide-tab flex flex-wrap items-center justify-between gap-2">
+              <span id="project-tab"></span>
+              <button type="button" id="copy-project-code" class="rounded border border-slate-400 bg-white px-2 py-1 text-xs">Copiar archivo</button>
+            </div>
+            <p id="project-path" class="break-all border-b border-slate-200 px-3 py-2 font-mono text-xs text-slate-600"></p>
+            <div class="ide-source" tabindex="0" aria-label="Código fuente">
+              <pre id="project-lines" class="ide-gutter" aria-hidden="true"></pre>
+              <pre><code id="project-code"></code></pre>
+            </div>
+          </div>
+        </div>
+        <p id="project-copy-status" role="status" class="mt-2 text-sm"></p>
+      <div class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
+        <h2 class="text-xl font-semibold">Sigue el recorrido de la ficha</h2>
+        <p class="mt-2 text-sm leading-6">La simulación del navegador muestra la secuencia de conexión, escritura y lectura.</p>
+        <button id="run-db" type="button" class="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white">Ejecutar simulación</button>
+        <pre id="db-output" role="status" class="mt-4 whitespace-pre-wrap break-words rounded-lg bg-paper p-4 text-sm">Los resultados aparecerán aquí.</pre>
+      </div>
+      <details id="mysql-setup" open class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
+        <summary class="cursor-pointer font-semibold">Ejecutar en NetBeans con MySQL</summary>
+        <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
+          <li>En NetBeans, elige <strong>File → New Project → Java with Maven → Java Application</strong>. Usa Java 17 y el grupo <code>cl.automotora</code>.</li>
+          <li>Abre <code>esquema.sql</code> en MySQL Workbench y ejecútalo. Copia el <code>pom.xml</code> y cada archivo Java en la ruta indicada.</li>
+          <li>El ejemplo se conecta a <code>localhost:3306</code> con el usuario <code>root</code> y una contraseña vacía. Ajusta esos valores en <code>ConexionBD.java</code> si tu instalación local usa otras credenciales.</li>
+          <li>Ejecuta la clase principal. Usa una clave de ejemplo distinta si ya insertaste la ficha. Comprueba la fila en Workbench con el <code>SELECT</code> al final de <code>esquema.sql</code>.</li>
+        </ol>
+        <a class="mt-3 inline-block text-sm underline" href="https://dev.mysql.com/doc/connector-j/en/connector-j-installing-maven.html">Documentación de MySQL Connector/J para Maven</a>
+      </details>
+      <details id="supabase-setup" open hidden class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
+        <summary class="cursor-pointer font-semibold">Ejecutar en NetBeans con Supabase</summary>
+        <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
+          <li>En el panel de tu proyecto Supabase, abre <strong>SQL Editor</strong> y ejecuta <code>esquema.sql</code>. La tabla se crea en el esquema <code>public</code> con seguridad por filas activada para el acceso por la API.</li>
+          <li>Abre <strong>Connect → Session pooler</strong> y toma de ahí el host, el puerto y el usuario. Usa la contraseña de la base de datos del proyecto.</li>
+          <li>Define estas variables en el entorno desde el que inicias NetBeans. Sustituye los campos de ejemplo por los de tu proyecto y conserva la contraseña fuera del código.</li>
+        </ol>
+        <pre class="mt-3 overflow-x-auto rounded-lg bg-paper p-4 text-sm"><code>SUPABASE_DB_URL=jdbc:postgresql://HOST_DEL_POOLER:5432/postgres?sslmode=require
+SUPABASE_DB_USER=postgres.REFERENCIA_DEL_PROYECTO
+SUPABASE_DB_PASSWORD=CONTRASEÑA_DE_LA_BASE</code></pre>
+        <p class="mt-2 text-sm leading-6">Abre el proyecto Maven con el <code>pom.xml</code> de Supabase, copia los archivos Java y ejecuta la clase principal. Comprueba la fila con el <code>SELECT</code> del esquema en el SQL Editor.</p>
+        <a class="mt-3 inline-block text-sm underline" href="https://supabase.com/docs/guides/database/connecting-to-postgres">Documentación de conexión a PostgreSQL en Supabase</a>
+      </details>
+    </section>
+  </main>
+
+  <footer class="border-t border-ink/10">
+    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between">
+      <p>Laboratorio de modelos y DAO en Java · basado en Automotora</p>
+      <p>Guía de Java · Modelo, DAO, JUnit y bases de datos</p>
+    </div>
+  </footer>
+</body>
+</html>

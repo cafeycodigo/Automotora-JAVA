@@ -1,0 +1,15 @@
+/* Regenerar desde la raíz: npx @tailwindcss/cli@4.1.13 -i _page/tailwind.input.css -o _page/tailwind.css */
+@import "tailwindcss";
+@source "./";
+
+@theme {
+  --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+}
+
+@theme inline {
+  --color-ink: rgb(var(--ink));
+  --color-paper: rgb(var(--paper));
+  --color-lime: rgb(var(--highlight));
+  --color-accent: rgb(var(--accent));
+}
