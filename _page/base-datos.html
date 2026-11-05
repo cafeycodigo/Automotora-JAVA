@@ -33,10 +33,10 @@
   <!-- Preload & Styles -->
   <link rel="preload" href="tailwind.css" as="style">
   <link rel="stylesheet" href="tailwind.css">
-  <link rel="stylesheet" href="guia.css">
-  <script src="proyectos.js" defer></script>
-  <script src="contextos.js" defer></script>
-  <script src="base-datos.js" defer></script>
+  <link rel="stylesheet" href="guia.css?v=20261105-2">
+  <script src="proyectos.js?v=20261105-2" defer></script>
+  <script src="contextos.js?v=20261105-2" defer></script>
+  <script src="base-datos.js?v=20261105-2" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -159,8 +159,17 @@
               Usa <strong>MySQL local</strong> si trabajas con MySQL Server / Workbench o XAMPP en tu computador, o elige <strong>Supabase (PostgreSQL)</strong> para conectarte a una base de datos en la nube usando variables de entorno.
             </p>
             <div class="mt-3 rounded-xl bg-paper p-3 text-xs">
-              <span class="font-semibold text-ink/75">Driver Maven en <code>pom.xml</code>:</span>
-              <code id="db-driver" class="ml-1 break-all font-mono font-bold text-accent"></code>
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="font-semibold text-ink/75">Conector Maven en <code>pom.xml</code>:</span>
+                <code id="db-driver" class="break-all font-mono font-bold text-accent"></code>
+              </div>
+              <pre class="mt-2 overflow-x-auto rounded-xl bg-ink p-3.5 font-mono text-xs leading-5 text-lime"><code id="db-dependency-xml">&lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+      &lt;version&gt;9.3.0&lt;/version&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
             </div>
           </div>
 
@@ -351,8 +360,17 @@
             <ol class="mt-4 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-ink/75">
               <li>En NetBeans, elige <strong>File → New Project → Java with Maven → Java Application</strong>.</li>
               <li>Abre <code class="font-mono">esquema.sql</code> en <strong>MySQL Workbench</strong> o phpMyAdmin y ejecútalo para crear la base de datos y la tabla <code class="domain-table-name font-mono">vehiculo</code>.</li>
-              <li>Copia la dependencia <code class="font-mono">mysql-connector-j</code> al <code class="font-mono">pom.xml</code> y crea las clases <code class="font-mono">ConexionBD</code>, <code class="domain-model-name font-mono">Vehiculo</code> y <code class="domain-dao-name font-mono">VehiculoDAO</code>.</li>
-              <li>Verifica en <code class="font-mono">ConexionBD.java</code> el puerto (<code class="font-mono">3306</code>), usuario (<code class="font-mono">root</code>) y la contraseña de tu servidor MySQL local.</li>
+              <li>Agrega el conector oficial de MySQL dentro de tu archivo <code class="font-mono">pom.xml</code>:</li>
+            </ol>
+            <pre class="mt-3 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-xs leading-5 text-lime"><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;com.mysql&lt;/groupId&gt;
+      &lt;artifactId&gt;mysql-connector-j&lt;/artifactId&gt;
+      &lt;version&gt;9.3.0&lt;/version&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+            <ol start="4" class="mt-3 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-ink/75">
+              <li>Crea las clases <code class="font-mono">ConexionBD</code>, <code class="domain-model-name font-mono">Vehiculo</code> y <code class="domain-dao-name font-mono">VehiculoDAO</code> y verifica en <code class="font-mono">ConexionBD.java</code> el puerto (<code class="font-mono">3306</code>), usuario (<code class="font-mono">root</code>) y la contraseña de tu servidor MySQL local.</li>
               <li>Ejecuta la clase principal y comprueba los registros insertados con <code class="font-mono">SELECT * FROM <span class="domain-table-name">vehiculo</span>;</code>.</li>
             </ol>
           </details>

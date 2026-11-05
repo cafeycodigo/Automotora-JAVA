@@ -262,6 +262,15 @@ function renderDatabaseLesson(context) {
   byId("context-description").textContent =
     `Construye el proyecto ${projectName} en Java 17 y NetBeans. La clase ${model} representa la ficha, ${model}DAO ejecuta sentencias SQL sobre la tabla ${sqlTable} con PreparedStatement y ConexionBD abre la sesión hacia ${provider.name}.`;
   byId("db-driver").textContent = `${provider.group}:${provider.artifact}:${provider.version}`;
+  if (byId("db-dependency-xml")) {
+    byId("db-dependency-xml").textContent = `<dependencies>
+    <dependency>
+      <groupId>${provider.group}</groupId>
+      <artifactId>${provider.artifact}</artifactId>
+      <version>${provider.version}</version>
+  </dependency>
+  </dependencies>`;
+  }
   byId("db-engine").textContent = provider.name;
   byId("mysql-setup").hidden = providerKey !== "mysql";
   byId("supabase-setup").hidden = providerKey !== "supabase";

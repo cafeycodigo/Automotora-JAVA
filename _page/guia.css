@@ -528,36 +528,85 @@ main select {
   max-height: 38rem;
   overflow: auto;
   padding: 0.65rem;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
 }
 
-#project-files summary,
-#project-files button {
+#project-files .tree-branch {
+  margin-bottom: 0.12rem;
+}
+
+#project-files .tree-summary {
+  display: flex;
+  align-items: center;
   cursor: pointer;
   white-space: nowrap;
-  padding: 0.25rem 0.4rem;
+  padding: 0.3rem 0.45rem;
   border-radius: 0.45rem;
+  font-weight: 600;
+  color: rgb(var(--ink));
+  list-style: none;
+  user-select: none;
 }
 
-#project-files summary:hover {
+#project-files .tree-summary::-webkit-details-marker {
+  display: none;
+}
+
+#project-files .tree-summary::before {
+  content: "▸";
+  display: inline-block;
+  width: 0.9rem;
+  font-size: 0.7rem;
+  color: #64748b;
+  transition: transform 0.15s ease;
+}
+
+#project-files .tree-branch[open] > .tree-summary::before {
+  transform: rotate(90deg);
+}
+
+#project-files .tree-project > .tree-summary {
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.04);
+  margin-bottom: 0.15rem;
+}
+
+#project-files .tree-subfolder > .tree-summary {
+  color: #1e293b;
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 0.76rem;
+}
+
+#project-files .tree-package > .tree-summary {
+  color: rgb(var(--accent));
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+}
+
+#project-files .tree-summary:hover {
   background: #e2e8f0;
 }
 
-#project-files details> :not(summary) {
-  margin-left: 0.9rem;
+#project-files .tree-children {
+  margin-left: 0.65rem;
+  padding-left: 0.55rem;
+  border-left: 1.5px solid #cbd5e1;
 }
 
 #project-files button {
-  display: block;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
   width: 100%;
-  padding: 0.35rem 0.5rem;
-  border-radius: 0.5rem;
+  padding: 0.32rem 0.5rem;
+  border-radius: 0.45rem;
   text-align: left;
   border: none;
   background: transparent;
   color: var(--muted);
   font-family: "DM Mono", ui-monospace, monospace;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
 }
 
 #project-files button:hover {
@@ -568,7 +617,7 @@ main select {
 #project-files button[aria-pressed="true"] {
   background: var(--soft-accent);
   color: rgb(var(--accent));
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .ide-source {
