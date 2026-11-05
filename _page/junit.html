@@ -1,10 +1,38 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CL">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Una guía sencilla del proyecto Automotora Java y su implementación con DAO.">
-  <title>Pruebas JUnit · Automotora Java</title>
+  <title>03 Pruebas Unitarias JUnit 5 y JaCoCo en Java 17: Patrón AAA y Assertions · Guía Java</title>
+  <meta name="description" content="Aprende a escribir pruebas unitarias con JUnit Jupiter 5 y medir cobertura con JaCoCo en Java 17 y Maven: patrón AAA, assertEquals, assertThrows, simulador y 6 ejercicios.">
+  <meta name="keywords" content="JUnit 5 Java, JUnit Jupiter, Pruebas Unitarias Java, Patrón AAA Testing, assertEquals, assertThrows lambda, JaCoCo Maven, Surefire Plugin, Testing DAO Java">
+  <meta name="author" content="Café y Código · curso-java.cafeycodigo.org">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="theme-color" content="#4338ca">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="canonical" href="https://curso-java.cafeycodigo.org/junit.html">
+  <link rel="prev" href="https://curso-java.cafeycodigo.org/proyecto.html">
+  <link rel="next" href="https://curso-java.cafeycodigo.org/base-datos.html">
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="Curso Java · Café y Código">
+  <meta property="og:title" content="03 Pruebas Unitarias con JUnit 5 y JaCoCo en Java 17: Patrón AAA y Assertions">
+  <meta property="og:description" content="Domina el testing automatizado en Java 17 con JUnit Jupiter 5: patrón Arrange-Act-Assert, catálogo de aserciones, simulador interactivo y 6 ejercicios.">
+  <meta property="og:url" content="https://curso-java.cafeycodigo.org/junit.html">
+  <meta property="og:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+  <meta property="og:image:alt" content="Módulo 03 Pruebas Unitarias JUnit 5 y Cobertura JaCoCo en Java 17">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="03 Pruebas Unitarias JUnit 5 y JaCoCo en Java 17">
+  <meta name="twitter:description" content="Guía práctica de JUnit 5 en Java: patrón AAA, assertThrows con expresiones lambda, cobertura JaCoCo y 6 ejercicios resueltos.">
+  <meta name="twitter:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+
+  <!-- Preload & Styles -->
+  <link rel="preload" href="tailwind.css" as="style">
   <link rel="stylesheet" href="tailwind.css">
   <link rel="stylesheet" href="guia.css">
   <script src="proyectos.js" defer></script>
@@ -13,133 +41,388 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Datos Estructurados Schema.org (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "url": "https://curso-java.cafeycodigo.org/junit.html",
+        "headline": "03 Pruebas Unitarias JUnit 5 y JaCoCo en Java 17: Patrón AAA, Assertions y Cobertura",
+        "description": "Guía completa para probar el Modelo y el DAO en Java 17 usando JUnit Jupiter 5, expresiones lambda en assertThrows y reportes de cobertura con JaCoCo en Maven.",
+        "proficiencyLevel": "Intermediate",
+        "inLanguage": "es-CL",
+        "about": ["JUnit 5", "Pruebas Unitarias en Java", "JaCoCo", "Maven Surefire"]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Curso Java 17",
+            "item": "https://curso-java.cafeycodigo.org/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "03 Pruebas JUnit 5",
+            "item": "https://curso-java.cafeycodigo.org/junit.html"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué es el patrón AAA (Arrange, Act, Assert) en JUnit 5?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "El patrón AAA divide cada método @Test en tres pasos: Arrange (preparar e instanciar los objetos de prueba), Act (ejecutar el método que se desea probar) y Assert (verificar el resultado con aserciones como assertEquals, assertTrue o assertThrows)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué se usa la expresión lambda () -> dentro de assertThrows en JUnit 5?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque la expresión lambda () -> posterga la ejecución del método hasta que JUnit 5 entra en su bloque interno de captura, permitiéndole atrapar la excepción y dar la prueba por aprobada."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body data-lesson="junit" class="bg-paper font-sans text-ink antialiased">
-  <header class="guide-header border-b border-ink/10">
-    <nav class="guide-nav mx-auto grid max-w-6xl items-center gap-3 px-4 pt-4 sm:px-6" aria-label="Navegación principal">
-      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white" aria-hidden="true">A</span>
-        <span><span id="context-brand">Automotora</span> <span class="text-ink/45">/ Java</span></span>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <header class="guide-header">
+    <nav class="guide-nav mx-auto max-w-6xl px-4 py-3 sm:px-6" aria-label="Navegación principal">
+      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight text-ink no-underline">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-mono text-sm font-bold text-white shadow-sm" aria-hidden="true">JV</span>
+        <span class="truncate"><span id="context-brand" class="font-bold">Automotora</span> <span class="text-ink/45">/ Guía Java</span></span>
       </a>
-      <div class="lesson-links grid gap-1 rounded-2xl bg-paper p-1 text-sm text-ink/75">
+      <div class="lesson-links" role="navigation" aria-label="Módulos del curso">
         <a id="nav-model" data-page="index.html" href="index.html">01 Modelo</a>
         <a id="nav-project" data-page="proyecto.html" href="proyecto.html">02 DAO</a>
         <a id="nav-tests" aria-current="page" data-page="junit.html" href="junit.html">03 JUnit</a>
         <a id="nav-db" data-page="base-datos.html" href="base-datos.html">04 Datos</a>
       </div>
-      <span class="guide-stack rounded-full bg-paper px-3 py-1.5 font-mono text-xs text-ink/75">Java · Maven</span>
+      <span class="guide-stack rounded-full border border-ink/10 bg-paper px-3 py-1 font-mono text-xs font-medium text-ink/75">JUnit 5 · JaCoCo · Maven</span>
     </nav>
-    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6" aria-label="Contexto de aprendizaje">
-      <p class="text-xs font-semibold text-ink/75">Contexto del ejemplo</p>
-      <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6" aria-label="Contexto de aprendizaje">
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="text-xs font-semibold uppercase tracking-wider text-ink/60">Dominio:</p>
+        <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+      </div>
+      <div class="section-nav-bar text-xs" aria-label="Secciones de esta lección">
+        <a class="jump-link" href="#anatomia-junit">1. Patrón AAA y Ciclo</a>
+        <a class="jump-link" href="#test-list">2. Código de Tests</a>
+        <a class="jump-link" href="#aserciones">3. Catálogo Assertions</a>
+        <a class="jump-link" href="#simulador-junit">4. Simulador Suite</a>
+        <a class="jump-link" href="#cobertura">5. Maven y JaCoCo</a>
+        <a class="jump-link" href="#ejercicios-junit">6. Ejercicios (6)</a>
+      </div>
     </aside>
   </header>
 
-  <main>
-    <section id="pruebas" class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-      <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Lección 03 · Test JUnit</p>
-      <h1 id="context-title" class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Comprueba el comportamiento del DAO</h1>
-      <p id="context-description" class="mt-5 max-w-2xl text-lg leading-8 text-ink/70"></p>
-      <div class="mt-5 flex flex-wrap gap-2 text-sm font-medium"><a class="jump-link" href="#test-list">Las cinco pruebas</a><a class="jump-link" href="#aserciones">Aserciones</a><a class="jump-link" href="#cobertura">JaCoCo</a></div>
-      <section class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5" aria-labelledby="test-list">
-        <h2 id="test-list" class="text-xl font-semibold">Las 5 pruebas de AutomotoraDAO</h2>
-        <p class="mt-2 text-sm leading-6">JUnit ejecuta cada método marcado con <code>@Test</code>. Las aserciones comparan el resultado real con el esperado. Las pruebas del modelo revisan las reglas de una ficha y las del DAO comprueban cómo se guarda y recupera en memoria.</p>
-        <div class="mt-4 grid gap-5 md:grid-cols-2">
-          <div>
-            <h3 class="font-semibold">Modelo · <code>VehiculoTest.java</code></h3>
-            <ul class="mt-2 list-disc space-y-2 pl-5 text-sm leading-6">
-              <li><code class="break-words">normalizaLaPatente()</code> comprueba que <code>" abcd12 "</code> se guarda como <code>"ABCD12"</code>.</li>
-              <li><code class="break-words">rechazaUnCodigoConLetras()</code> espera una <code>IllegalArgumentException</code> al usar <code>8820260A</code>.</li>
-              <li><code class="break-words">rechazaUnAnioAnteriorA2015()</code> espera una <code>IllegalArgumentException</code> al ingresar <code>2014</code>.</li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="font-semibold">DAO · <code>VehiculoDAOTest.java</code></h3>
-            <ul class="mt-2 list-disc space-y-2 pl-5 text-sm leading-6">
-              <li><code class="break-words">encuentraLaFichaGuardada()</code> guarda un Ferrari F8 Tributo y verifica que la búsqueda por <code>ABCD12</code> devuelve la misma ficha.</li>
-              <li><code class="break-words">rechazaUnaClaveDuplicada()</code> guarda dos fichas con patente <code>ABCD12</code>. El primer guardado debe devolver <code>true</code> y el segundo, <code>false</code>.</li>
-            </ul>
-          </div>
+  <main id="main-content">
+    <!-- HERO -->
+    <section id="pruebas" class="hero-surface border-b border-ink/10">
+      <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+        <nav aria-label="Ruta de navegación" class="seo-breadcrumbs">
+          <a data-page="index.html" href="index.html">Guía Java 17</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">03 Pruebas JUnit 5 (<span class="domain-model-name">Vehiculo</span>Test)</span>
+        </nav>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="pro-badge pro-badge-indigo">Módulo 03 · Testing Automatizado</span>
+          <span class="pro-badge pro-badge-emerald">JUnit Jupiter 5 + Cobertura JaCoCo</span>
         </div>
-        <h3 class="mt-5 font-semibold">Ejemplo del modelo</h3>
-        <pre class="mt-2 overflow-x-auto rounded-lg bg-paper p-4 text-sm"><code>@Test
-void normalizaLaPatente() {
-    Vehiculo vehiculo = new Vehiculo();
-    vehiculo.setPatente(" abcd12 ");
-    assertEquals("ABCD12", vehiculo.getPatente());
-}</code></pre>
-        <p class="mt-2 text-sm leading-6"><code>assertEquals</code> compara el texto esperado con el devuelto por <code>getPatente()</code>. Debajo puedes ver el ejemplo completo del DAO para el contexto seleccionado.</p>
-      </section>
-      <section id="aserciones" class="assertion-guide mt-10" aria-labelledby="assertions-title">
-        <h2 id="assertions-title" class="text-xl font-semibold">Qué aserciones tiene JUnit 5 y cuándo usarlas</h2>
-        <p class="mt-2 max-w-3xl text-sm leading-6">Una aserción expresa qué debe ocurrir. En <code>assertEquals(esperado, obtenido)</code>, escribe primero el valor que exige la regla y después el resultado del código. Si la patente obtenida fuera <code>abcd12</code>, JUnit indicaría que esperaba <code>ABCD12</code> y mostraría el valor recibido.</p>
-        <p class="mt-2 max-w-3xl text-sm leading-6">Las cinco pruebas del módulo usan <code>assertEquals</code>, <code>assertThrows</code>, <code>assertTrue</code>, <code>assertFalse</code> y <code>assertSame</code>. El catálogo incluye otras aserciones para escribir casos nuevos.</p>
-        <div class="mt-5 grid gap-4 text-sm leading-6 md:grid-cols-2">
-          <div class="assertion-card rounded-2xl border border-ink/10 bg-white p-4 sm:p-5">
-            <h3 class="font-semibold">Valores, referencias y resultados</h3>
-            <ul class="assertion-items mt-3">
-              <li><code>assertEquals</code> y <code>assertNotEquals</code> comprueban igualdad o diferencia de valores. Ejemplo del modelo: <code>assertEquals("ABCD12", vehiculo.getPatente())</code>.</li>
-              <li><code>assertSame</code> y <code>assertNotSame</code> comprueban si dos referencias apuntan al mismo objeto o a objetos distintos. <code>assertSame(ficha, dao.buscar("ABCD12"))</code> exige recuperar la instancia guardada.</li>
-              <li><code>assertTrue</code> y <code>assertFalse</code> esperan un resultado booleano. El primer <code>guardar</code> debe devolver <code>true</code> y el segundo con la misma patente, <code>false</code>.</li>
-              <li><code>assertNull</code> y <code>assertNotNull</code> comprueban ausencia o presencia de un objeto. En un DAO vacío, <code>assertNull(dao.buscar("ABCD12"))</code> comprueba una búsqueda sin resultado.</li>
-            </ul>
-          </div>
-          <div class="assertion-card rounded-2xl border border-ink/10 bg-white p-4 sm:p-5">
-            <h3 class="font-semibold">Excepciones, colecciones y tiempo</h3>
-            <ul class="assertion-items mt-3">
-              <li><code>assertThrows</code> acepta el tipo de excepción indicado o un subtipo. <code>assertThrowsExactly</code> exige el tipo exacto y <code>assertDoesNotThrow</code> comprueba que la operación termina sin lanzar una excepción.</li>
-              <li><code>assertArrayEquals</code> compara elementos de arreglos. <code>assertIterableEquals</code> compara elementos de iterables en orden. <code>assertLinesMatch</code> compara listas de líneas y permite patrones en las esperadas.</li>
-              <li><code>assertAll</code> agrupa comprobaciones y reporta sus fallos juntos. Por ejemplo, puede comprobar la patente y el año de una misma ficha.</li>
-              <li><code>assertTimeout</code> mide la duración y comprueba el límite al terminar. <code>assertTimeoutPreemptively</code> ejecuta en otro hilo e intenta interrumpirlo al superar el límite.</li>
-              <li><code>fail</code> marca el test como fallido cuando la ejecución llega a un punto inesperado.</li>
-            </ul>
-          </div>
-        </div>
-        <h3 class="mt-5 font-semibold">Ejemplo de una excepción esperada</h3>
-        <pre class="mt-2 overflow-x-auto rounded-lg bg-paper p-4 text-sm"><code>assertThrows(IllegalArgumentException.class,
-        () -&gt; vehiculo.setAnio(2014));</code></pre>
-        <p class="mt-2 text-sm leading-6">La expresión <code>() -&gt;</code> entrega a JUnit la operación que debe ejecutar. El test pasa si <code>setAnio(2014)</code> lanza la excepción esperada. Falla si acepta el año o lanza una excepción de otro tipo.</p>
-        <a class="mt-3 inline-block text-sm underline" href="https://docs.junit.org/5.11.4/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html">Referencia de Assertions en JUnit 5.11.4</a>
-      </section>
-      <ol class="mt-8 grid gap-4 md:grid-cols-3">
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>1. Preparar</strong><p class="mt-2 text-sm leading-6">Crea un DAO vacío y una ficha válida. Cada prueba prepara sus propios datos.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>2. Actuar</strong><p class="mt-2 text-sm leading-6">Llama a un método del DAO. Para comprobar un duplicado, guarda dos veces la misma ficha.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>3. Comprobar</strong><p class="mt-2 text-sm leading-6"><code>assertFalse</code> exige que el segundo intento devuelva <code>false</code>. Si devuelve <code>true</code>, la prueba falla.</p></li>
-      </ol>
-      <div class="mt-8 overflow-hidden rounded-xl bg-ink text-white">
-        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/15 p-4">
-          <span id="junit-filename" class="font-mono text-sm"></span>
-          <button id="copy-junit-code" type="button" class="rounded-lg border border-white/30 px-3 py-2 text-xs">Copiar código</button>
-        </div>
-        <pre class="overflow-x-auto p-4 text-xs leading-6 sm:text-sm"><code id="junit-code"></code></pre>
+        <h1 id="context-title" class="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Comprueba automáticamente el Modelo y el DAO</h1>
+        <p id="context-description" class="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg sm:leading-8"></p>
+
+        <ol id="anatomia-junit" class="mt-8 grid gap-4 md:grid-cols-3">
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-slate">1. Arrange · Preparar</span>
+            <h2 class="mt-3 text-base font-bold">Construye un escenario limpio</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70">Cada método <code class="font-mono">@Test</code> se ejecuta de forma aislada: instancia un <code class="font-mono">new <span class="domain-dao-name">VehiculoDAO</span>()</code> vacío y crea las fichas <code class="domain-model-name font-mono">Vehiculo</code> de prueba.</p>
+          </li>
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-indigo">2. Act · Actuar</span>
+            <h2 class="mt-3 text-base font-bold">Invoca el método bajo prueba</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70">Llama al método específico que quieres verificar en <code class="domain-model-name font-mono">Vehiculo</code> o en <code class="domain-dao-name font-mono">VehiculoDAO</code>.</p>
+          </li>
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-emerald">3. Assert · Comprobar</span>
+            <h2 class="mt-3 text-base font-bold">Exige el resultado esperado</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70">Usa aserciones de JUnit (<code class="font-mono">assertEquals</code>, <code class="font-mono">assertTrue</code>, <code class="font-mono">assertThrows</code>) para verificar que la respuesta coincida con la regla de negocio.</p>
+          </li>
+        </ol>
       </div>
-      <p id="junit-copy-status" role="status" class="mt-2 text-sm"></p>
-      <div class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <h2 class="text-xl font-semibold">Simula el resultado</h2>
-        <p class="mt-2 text-sm leading-6">El navegador simula las dos pruebas del DAO en JavaScript. Primero ejecuta con la regla de duplicados. Después simula un error y compara el resultado esperado con el obtenido.</p>
-        <label class="mt-4 flex items-center gap-2 text-sm"><input id="junit-bug" type="checkbox"> Simular un DAO que admite duplicados</label>
-        <button id="run-junit" type="button" class="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white">Ejecutar simulación</button>
-        <pre id="junit-output" role="status" class="mt-4 whitespace-pre-wrap break-words rounded-lg bg-paper p-4 text-sm">Los resultados aparecerán aquí.</pre>
+    </section>
+
+    <!-- SECCIÓN 2: ANÁLISIS DINÁMICO DE MODELTEST.JAVA Y DAOTEST.JAVA -->
+    <section class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Pruebas Unitarias del Dominio</span>
+          <h2 id="test-list" class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Las 5 pruebas de <code class="domain-model-name font-mono text-accent">Vehiculo</code> y <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            En un proyecto Maven, el código de la aplicación vive en <code class="font-mono text-sm">src/main/java</code> y las pruebas automatizadas viven en <code class="font-mono text-sm">src/test/java</code>. Revisa las dos clases de prueba para el dominio <strong class="domain-title-name">Vehículo</strong>:
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <!-- ModelTest.java dinámico -->
+          <article class="code-window">
+            <div class="code-window-header">
+              <span><span class="window-dots"><span></span><span></span><span></span></span><span id="junit-model-filename">VehiculoTest.java</span></span>
+              <span class="text-xs text-lime">3 @Test del Modelo</span>
+            </div>
+            <pre class="overflow-x-auto p-5 text-xs leading-6 sm:text-sm"><code id="junit-model-code"></code></pre>
+            <div class="border-t border-white/10 bg-white/[0.03] p-4 text-xs leading-5 text-white/80">
+              <strong class="text-lime">¿Qué verifica esta clase?</strong> Comprueba un <em>camino feliz</em> (normalización de clave) y dos <em>caminos de error</em> que deben lanzar <code class="font-mono">IllegalArgumentException</code>.
+            </div>
+          </article>
+
+          <!-- DAOTest.java dinámico -->
+          <div class="flex flex-col justify-between gap-4">
+            <div class="code-window">
+              <div class="code-window-header">
+                <span id="junit-filename" class="font-mono text-xs font-bold text-white"></span>
+                <button id="copy-junit-code" type="button" class="rounded-lg border border-white/25 bg-white/5 px-3 py-1 text-xs font-medium text-white hover:bg-white/15">Copiar código</button>
+              </div>
+              <pre class="overflow-x-auto p-5 text-xs leading-6 sm:text-sm"><code id="junit-code"></code></pre>
+            </div>
+            <p id="junit-copy-status" role="status" class="text-xs font-medium text-accent"></p>
+
+            <div class="pro-card bg-paper">
+              <h3 class="text-base font-bold">¿Por qué existe el método auxiliar <code class="font-mono text-accent">private <span class="domain-model-name">Vehiculo</span> crearFicha()</code>?</h3>
+              <p class="mt-2 text-sm leading-6 text-ink/70">
+                En <code class="font-mono"><span class="domain-dao-name">VehiculoDAO</span>Test</code>, para no repetir la construcción del objeto en cada prueba (principio <strong>DRY · Don't Repeat Yourself</strong>), se extrae un método privado <code class="font-mono">crearFicha()</code> que devuelve una instancia válida de <code class="domain-model-name font-mono">Vehiculo</code> lista para usar.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explicación de anotaciones del ciclo de vida JUnit 5 -->
+        <div class="mt-10">
+          <h3 class="text-xl font-bold">Anotaciones esenciales del ciclo de vida en JUnit 5</h3>
+          <div class="table-scroll mt-4">
+            <table class="pro-table">
+              <thead>
+                <tr>
+                  <th>Anotación</th>
+                  <th>Cuándo se ejecuta</th>
+                  <th>Uso recomendado en tu proyecto Java</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>@Test</code></td>
+                  <td>Marca un método como caso de prueba ejecutable.</td>
+                  <td>Cada regla de negocio de <code class="domain-model-name">Vehiculo</code> o <code class="domain-dao-name">VehiculoDAO</code> debe tener su propio método <code>@Test</code>.</td>
+                </tr>
+                <tr>
+                  <td><code>@BeforeEach</code></td>
+                  <td>Se ejecuta automáticamente <strong>antes de cada</strong> método <code>@Test</code>.</td>
+                  <td>Ideal para inicializar <code>dao = new <span class="domain-dao-name">VehiculoDAO</span>();</code> sin repetir ese código en cada prueba.</td>
+                </tr>
+                <tr>
+                  <td><code>@DisplayName("...")</code></td>
+                  <td>Personaliza el nombre legible del test en el reporte de NetBeans/Maven.</td>
+                  <td>Permite describir la regla en español claro en la ventana de resultados de pruebas.</td>
+                </tr>
+                <tr>
+                  <td><code>@AfterEach</code></td>
+                  <td>Se ejecuta después de cada método <code>@Test</code>.</td>
+                  <td>Útil cuando una prueba abre recursos externos que deben limpiarse al terminar cada caso.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-      <details id="cobertura" open class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <summary class="cursor-pointer font-semibold">Ejecutar las pruebas y generar cobertura con JaCoCo</summary>
-        <p id="junit-test-path" class="mt-3 break-words text-sm leading-6"></p>
-        <p class="mt-2 text-sm leading-6">El <code>pom.xml</code> de <code>AutomotoraDAO</code> incluye JUnit Jupiter, Surefire y JaCoCo 0.8.14. Maven descarga los complementos en la primera ejecución. Desde la raíz del repositorio ejecuta:</p>
-        <pre class="mt-3 overflow-x-auto rounded-lg bg-paper p-4 text-sm"><code>mvn -f AutomotoraDAO/pom.xml test
+    </section>
+
+    <!-- SECCIÓN 3: CATÁLOGO DE ASERCIONES -->
+    <section id="aserciones" class="assertion-guide border-b border-ink/10 bg-paper" aria-labelledby="assertions-title">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Referencia Rápida JUnit Jupiter</span>
+          <h2 id="assertions-title" class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">¿Qué aserción elegir en cada caso de prueba?</h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Todas las aserciones se importan de forma estática desde <code class="font-mono text-sm">org.junit.jupiter.api.Assertions.*</code>. Recuerda la regla de oro en <code class="font-mono text-sm">assertEquals(esperado, obtenido)</code>: <strong>el primer argumento siempre es el valor esperado, y el segundo es el resultado devuelto por tu código Java</strong>.
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-6 md:grid-cols-2">
+          <div class="assertion-card pro-card">
+            <span class="pro-badge pro-badge-emerald">Grupo 1 · Valores, Booleanos y Referencias</span>
+            <h3 class="mt-3 font-bold">Comprobación de estado y retorno de métodos</h3>
+            <ul class="assertion-items mt-3 text-sm leading-6">
+              <li><code>assertEquals(esperado, actual)</code> y <code>assertNotEquals(...)</code> comparan igualdad usando <code>.equals()</code> o el valor primitivo.</li>
+              <li><code>assertTrue(condicion)</code> y <code>assertFalse(condicion)</code> verifican retornos booleanos. El primer <code>dao.guardar(ficha)</code> debe devolver <code>true</code> y el segundo con la misma clave, <code>false</code>.</li>
+              <li><code>assertNull(objeto)</code> y <code>assertNotNull(objeto)</code> verifican ausencia o presencia de un objeto al llamar a <code>dao.buscar(...)</code>.</li>
+              <li><code>assertSame(esperado, actual)</code> comprueba que ambas variables apunten exactamente a la <strong>misma instancia en memoria</strong> (<code>==</code>).</li>
+            </ul>
+          </div>
+
+          <div class="assertion-card pro-card">
+            <span class="pro-badge pro-badge-amber">Grupo 2 · Excepciones, Agrupación y Colecciones</span>
+            <h3 class="mt-3 font-bold">Validación de errores y pruebas múltiples</h3>
+            <ul class="assertion-items mt-3 text-sm leading-6">
+              <li><code>assertThrows(ClaseExcepcion.class, () -&gt; codigo)</code> verifica que el bloque dentro de la expresión lambda <code>() -&gt;</code> lance la excepción indicada.</li>
+              <li><code>assertDoesNotThrow(() -&gt; codigo)</code> garantiza que una operación válida se ejecute sin lanzar ninguna excepción.</li>
+              <li><code>assertAll(() -&gt; ..., () -&gt; ...)</code> ejecuta varias aserciones juntas y reporta todos los fallos a la vez.</li>
+              <li><code>assertIterableEquals(listaEsperada, listaActual)</code> compara que dos listas devueltas por el DAO contengan los mismos elementos y en el mismo orden.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2 lg:items-center">
+          <div class="code-window">
+            <div class="code-window-header">
+              <span>Cómo funciona la expresión lambda <code>() -&gt;</code> en assertThrows</span>
+            </div>
+            <pre class="overflow-x-auto p-5 text-xs leading-6 sm:text-sm"><code id="junit-lambda-code"></code></pre>
+          </div>
+          <div class="pro-card">
+            <h3 class="text-lg font-bold">¿Por qué hay que escribir <code class="font-mono text-accent">() -&gt;</code> dentro de <code class="font-mono">assertThrows</code>?</h3>
+            <p class="mt-2 text-sm leading-6 text-ink/70">
+              Si llamaras al setter inválido directamente sin el <code class="font-mono">() -&gt;</code>, Java ejecutaría el setter <strong>antes</strong> de entrar a <code class="font-mono">assertThrows</code>, y la excepción detendría el test sin que JUnit pudiera capturarla. La expresión lambda <code class="font-mono">() -&gt;</code> entrega la instrucción para que JUnit la ejecute dentro de su propio bloque <code class="font-mono">try / catch</code>.
+            </p>
+            <a class="mt-3 inline-block text-xs font-semibold text-accent underline" href="https://docs.junit.org/5.11.4/api/org.junit.jupiter.api/org/junit/jupiter/api/Assertions.html" target="_blank" rel="noopener">Consultar documentación oficial de Assertions en JUnit 5 →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: SIMULADOR INTERACTIVO DE SUITE JUNIT + MUTACIÓN DE BUGS -->
+    <section id="simulador-junit" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-emerald">Laboratorio JUnit en Vivo</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Ejecuta la suite de pruebas de <code class="domain-model-name font-mono text-accent">Vehiculo</code> e inyecta errores</h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Activa cualquiera de los errores simulados de abajo y pulsa <strong>Ejecutar Suite JUnit</strong> para ver cómo las pruebas de <code class="domain-model-name font-mono text-sm">VehiculoTest</code> y <code class="domain-dao-name font-mono text-sm">VehiculoDAOTest</code> detectan el fallo:
+          </p>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+          <div class="pro-card space-y-4">
+            <h3 class="text-base font-bold">Configuración de ejecución (<span class="domain-title-name">Vehículo</span>)</h3>
+            <div class="space-y-3 rounded-xl bg-paper p-4 text-sm">
+              <label class="flex items-start gap-2.5 cursor-pointer">
+                <input id="junit-bug" type="checkbox" class="mt-0.5">
+                <span id="junit-bug-label-1"><strong>Bug en DAO:</strong> Ignorar validación de clave duplicada en <code class="font-mono text-xs">guardar()</code>.</span>
+              </label>
+              <label class="flex items-start gap-2.5 cursor-pointer">
+                <input id="junit-bug-patente" type="checkbox" class="mt-0.5">
+                <span id="junit-bug-label-2"><strong>Bug en Modelo:</strong> Olvidar normalizar con <code class="font-mono text-xs">.trim()</code> en el setter de clave.</span>
+              </label>
+              <label class="flex items-start gap-2.5 cursor-pointer">
+                <input id="junit-bug-anio" type="checkbox" class="mt-0.5">
+                <span id="junit-bug-label-3"><strong>Bug en Modelo:</strong> Permitir años menores a 2015 sin lanzar excepción.</span>
+              </label>
+            </div>
+            <button id="run-junit" type="button" class="w-full rounded-xl bg-accent px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-accent/90">
+              ▶ Ejecutar Suite JUnit (5 @Test)
+            </button>
+          </div>
+
+          <div class="code-window flex flex-col justify-between p-5">
+            <div>
+              <div class="flex items-center justify-between border-b border-white/15 pb-3">
+                <span class="font-mono text-xs uppercase tracking-wider text-white/60">Consola Surefire · JUnit Jupiter</span>
+                <span id="junit-status-badge" class="rounded-full bg-lime px-2.5 py-0.5 font-mono text-[11px] font-bold text-ink">LISTO</span>
+              </div>
+              <pre id="junit-output" role="status" class="mt-4 whitespace-pre-wrap break-words rounded-lg bg-white/10 p-4 font-mono text-xs leading-6 text-lime">Pulsa "Ejecutar Suite JUnit" para correr las pruebas.</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 5: EJECUCIÓN EN MAVEN Y REPORTE DE COBERTURA JACOCO -->
+    <section class="border-b border-ink/10 bg-paper">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <details id="cobertura" open class="pro-card">
+          <summary class="cursor-pointer text-xl font-bold">Cómo ejecutar las pruebas y generar el reporte de cobertura JaCoCo en Maven y NetBeans</summary>
+          <div class="mt-4 space-y-4 text-sm leading-6 text-ink/75">
+            <p id="junit-test-path" class="break-words font-medium text-ink"></p>
+            <p>
+              El archivo <code class="font-mono">pom.xml</code> incluye tres piezas clave para el testing profesional: la dependencia <strong>JUnit Jupiter</strong> (con <code class="font-mono">&lt;scope&gt;test&lt;/scope&gt;</code>), el plugin <strong>Maven Surefire</strong> y el plugin <strong>JaCoCo</strong> (que mide qué porcentaje de líneas e <code class="font-mono">if / else</code> fueron ejecutados por tus tests).
+            </p>
+            <div class="grid gap-4 md:grid-cols-2">
+              <div class="code-window">
+                <div class="code-window-header"><span>Comandos en terminal</span></div>
+                <pre class="overflow-x-auto p-4 font-mono text-xs leading-6 text-lime"><code># 1. Solo ejecutar los tests unitarios:
+mvn -f AutomotoraDAO/pom.xml test
+
+# 2. Limpiar, probar y crear el informe HTML de JaCoCo:
 mvn -f AutomotoraDAO/pom.xml clean verify</code></pre>
-        <p class="mt-2 text-sm leading-6">El primer comando ejecuta las pruebas. El segundo también genera <code class="break-all">AutomotoraDAO/target/site/jacoco/index.html</code>. Abre el informe y selecciona <code>Vehiculo</code> o <code>VehiculoDAO</code> para revisar qué líneas y ramas se ejecutaron. Las aserciones de JUnit comprueban el resultado de cada caso.</p>
-        <p class="mt-2 text-sm leading-6">En NetBeans, abre el módulo <code>AutomotoraDAO</code> y usa <strong>Test</strong> para correr las pruebas. Para generar el informe, ejecuta los objetivos Maven <code>clean verify</code>.</p>
-        <a class="mt-3 inline-block text-sm underline" href="https://docs.junit.org/5.11.4/user-guide/#running-tests-build-maven">Guía oficial de JUnit para Maven</a>
-        <a class="mt-3 block text-sm underline" href="https://www.jacoco.org/jacoco/trunk/doc/maven.html">Documentación del complemento JaCoCo para Maven</a>
-      </details>
-      <a data-page="base-datos.html" href="base-datos.html" class="mt-8 inline-block font-semibold underline">Continuar a bases de datos →</a>
+              </div>
+              <div class="rounded-xl border border-ink/10 bg-paper p-4">
+                <h3 class="font-bold text-ink">¿Cómo leer el semáforo de JaCoCo?</h3>
+                <p class="mt-1 text-xs leading-5">Al abrir <code class="break-all font-mono">target/site/jacoco/index.html</code> en tu navegador verás cada línea de <code class="domain-model-name font-mono">Vehiculo</code> y <code class="domain-dao-name font-mono">VehiculoDAO</code> coloreada:</p>
+                <ul class="mt-2 space-y-1 text-xs">
+                  <li>🟢 <strong>Verde:</strong> Línea o rama completamente ejecutada por al menos un <code class="font-mono">@Test</code>.</li>
+                  <li>🟡 <strong>Amarillo (rombo):</strong> Rama parcialmente cubierta (ej. probaste cuando el <code class="font-mono">if</code> dio <code class="font-mono">true</code>, pero ningún test probó cuando da <code class="font-mono">false</code>).</li>
+                  <li>🔴 <strong>Rojo:</strong> Código que ningún test ha ejecutado todavía.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: 6 EJERCICIOS PRÁCTICOS DINÁMICOS DE JUNIT 5 -->
+    <section id="ejercicios-junit" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Paso 06 · Práctica Guiada de Testing</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">6 Ejercicios Prácticos de JUnit 5 para <code class="domain-model-name font-mono text-accent">Vehiculo</code> y <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Escribe estos 6 tests unitarios adaptados al dominio <strong class="domain-title-name">Vehículo</strong> para cubrir <code class="font-mono text-sm">eliminar()</code>, <code class="font-mono text-sm">actualizar()</code>, reportes y casos borde:
+          </p>
+        </div>
+
+        <div id="junit-exercises-grid" class="mt-8 grid gap-6 lg:grid-cols-2"></div>
+
+        <div class="mt-10 flex flex-col items-start justify-between gap-4 rounded-3xl bg-ink p-7 text-white sm:flex-row sm:items-center sm:p-9">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-lime">Siguiente Módulo · 04 Base de Datos (JDBC)</span>
+            <h3 class="mt-2 text-xl font-bold sm:text-2xl">De la memoria RAM a una Base de Datos Real para <span class="domain-model-name text-lime">Vehiculo</span></h3>
+            <p class="mt-1 text-sm text-white/70">Aprende cómo evolucionar <code class="domain-dao-name font-mono text-lime">VehiculoDAO</code> usando <code class="font-mono text-lime">Connection</code>, <code class="font-mono text-lime">PreparedStatement</code> y <code class="font-mono text-lime">ResultSet</code>.</p>
+          </div>
+          <a data-page="base-datos.html" href="base-datos.html" class="shrink-0 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink no-underline transition hover:brightness-95">
+            Continuar a 04 Base de Datos →
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer class="border-t border-ink/10">
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between">
-      <p>Laboratorio de modelos y DAO en Java · basado en Automotora</p>
-      <p>Guía de Java · Modelo, DAO, JUnit y bases de datos</p>
+  <footer class="border-t border-ink/10 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-ink/60 sm:px-6">
+      <nav aria-label="Mapa de módulos del curso Java" class="seo-footer-links">
+        <a data-page="index.html" href="index.html">01 Modelo POO en Java</a>
+        <a data-page="proyecto.html" href="proyecto.html">02 Patrón DAO con ArrayList</a>
+        <a data-page="junit.html" href="junit.html">03 Pruebas Unitarias JUnit 5 y JaCoCo</a>
+        <a data-page="base-datos.html" href="base-datos.html">04 Base de Datos JDBC (MySQL y Supabase)</a>
+        <a href="sitemap.xml">Sitemap XML</a>
+      </nav>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p><strong>Guía Interactiva Java 17</strong> · Arquitectura en capas (Modelo POO, DAO, JUnit 5 y JDBC SQL)</p>
+        <p>Optimizado para estudio en Web y Móvil · Java 17 + Maven + NetBeans</p>
+      </div>
     </div>
   </footer>
 </body>

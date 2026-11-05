@@ -1,10 +1,38 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CL">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Una guía sencilla del proyecto Automotora Java y su implementación con DAO.">
-  <title>Proyecto de datos · Automotora Java</title>
+  <title>02 Patrón DAO en Java 17: ArrayList, Operaciones CRUD, Consultas y Swing · Guía Java</title>
+  <meta name="description" content="Aprende a implementar el patrón DAO (Data Access Object) en Java 17 con ArrayList: métodos guardar, buscar, listar, actualizar, eliminar, 8 reportes, vistas Swing y 6 ejercicios resueltos.">
+  <meta name="keywords" content="Patrón DAO Java, Data Access Object, ArrayList Java, CRUD en Java, DefaultTableModel Swing, JTable Java, copia defensiva ArrayList, NetBeans Swing, Ejercicios DAO Java">
+  <meta name="author" content="Café y Código · curso-java.cafeycodigo.org">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="theme-color" content="#4338ca">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="canonical" href="https://curso-java.cafeycodigo.org/proyecto.html">
+  <link rel="prev" href="https://curso-java.cafeycodigo.org/index.html">
+  <link rel="next" href="https://curso-java.cafeycodigo.org/junit.html">
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="Curso Java · Café y Código">
+  <meta property="og:title" content="02 Patrón DAO en Java 17: Colecciones ArrayList, CRUD, Reportes y Swing">
+  <meta property="og:description" content="Explora los 13 métodos de un DAO profesional en Java 17 con ArrayList, integración con JTable en Swing, laboratorio CRUD interactivo y 6 ejercicios prácticos.">
+  <meta property="og:url" content="https://curso-java.cafeycodigo.org/proyecto.html">
+  <meta property="og:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+  <meta property="og:image:alt" content="Módulo 02 Patrón DAO en Java 17 con ArrayList y Operaciones CRUD">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="02 Patrón DAO en Java 17: ArrayList, CRUD, Reportes y Vistas Swing">
+  <meta name="twitter:description" content="Guía paso a paso del patrón DAO en Java 17 con laboratorio CRUD en vivo, explorador de código IDE y 6 ejercicios resueltos.">
+  <meta name="twitter:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+
+  <!-- Preload & Styles -->
+  <link rel="preload" href="tailwind.css" as="style">
   <link rel="stylesheet" href="tailwind.css">
   <link rel="stylesheet" href="guia.css">
   <script src="fuentes-automotora.js" defer></script>
@@ -13,338 +41,392 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Datos Estructurados Schema.org (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "url": "https://curso-java.cafeycodigo.org/proyecto.html",
+        "headline": "02 Patrón DAO en Java 17: ArrayList, Operaciones CRUD, Filtros y Vistas Swing",
+        "description": "Cómo diseñar e implementar una clase DAO en Java 17 usando List y ArrayList con operaciones CRUD, copias defensivas, filtros de negocio y conexión con JTable en Swing.",
+        "proficiencyLevel": "Intermediate",
+        "inLanguage": "es-CL",
+        "about": ["Patrón DAO", "Java ArrayList", "Operaciones CRUD", "Java Swing JTable"]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Curso Java 17",
+            "item": "https://curso-java.cafeycodigo.org/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "02 Patrón DAO",
+            "item": "https://curso-java.cafeycodigo.org/proyecto.html"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Qué es el patrón DAO (Data Access Object) en Java?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "El patrón DAO es una capa dedicada exclusivamente a almacenar, buscar, listar, actualizar y eliminar objetos del Modelo, desacoplando la interfaz gráfica o método main de la estructura de almacenamiento (ArrayList en memoria o SQL con JDBC)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Por qué el método listar() devuelve new ArrayList<>(registros) en lugar de la lista original?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Porque retorna una copia defensiva: si otra clase llama a clear() o add() sobre la lista devuelta, solo modifica la copia y no altera la colección privada interna del DAO."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body data-lesson="proyecto" class="bg-paper font-sans text-ink antialiased">
-  <header class="guide-header border-b border-ink/10">
-    <nav class="guide-nav mx-auto grid max-w-6xl items-center gap-3 px-4 pt-4 sm:px-6" aria-label="Navegación principal">
-      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white" aria-hidden="true">A</span>
-        <span><span id="context-brand">Automotora</span> <span class="text-ink/45">/ Java</span></span>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <header class="guide-header">
+    <nav class="guide-nav mx-auto max-w-6xl px-4 py-3 sm:px-6" aria-label="Navegación principal">
+      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight text-ink no-underline">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-mono text-sm font-bold text-white shadow-sm" aria-hidden="true">JV</span>
+        <span class="truncate"><span id="context-brand" class="font-bold">Automotora</span> <span class="text-ink/45">/ Guía Java</span></span>
       </a>
-      <div class="lesson-links grid gap-1 rounded-2xl bg-paper p-1 text-sm text-ink/75">
+      <div class="lesson-links" role="navigation" aria-label="Módulos del curso">
         <a id="nav-model" data-page="index.html" href="index.html">01 Modelo</a>
         <a id="nav-project" aria-current="page" data-page="proyecto.html" href="proyecto.html">02 DAO</a>
         <a id="nav-tests" data-page="junit.html" href="junit.html">03 JUnit</a>
         <a id="nav-db" data-page="base-datos.html" href="base-datos.html">04 Datos</a>
       </div>
-      <span class="guide-stack rounded-full bg-paper px-3 py-1.5 font-mono text-xs text-ink/75">Java · Maven</span>
+      <span class="guide-stack rounded-full border border-ink/10 bg-paper px-3 py-1 font-mono text-xs font-medium text-ink/75">Java 17 · ArrayList · DAO</span>
     </nav>
-    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6" aria-label="Contexto de aprendizaje">
-      <p class="text-xs font-semibold text-ink/75">Contexto del ejemplo</p>
-      <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6" aria-label="Contexto de aprendizaje">
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="text-xs font-semibold uppercase tracking-wider text-ink/60">Dominio:</p>
+        <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+      </div>
+      <div class="section-nav-bar text-xs" aria-label="Secciones de esta lección">
+        <a class="jump-link" href="#demo">1. Laboratorio CRUD</a>
+        <a class="jump-link" href="#proyecto-java">2. Explorador IDE</a>
+        <a class="jump-link" href="#dao">3. Código CRUD</a>
+        <a class="jump-link" href="#consultas-dao">4. Los 13 Reportes</a>
+        <a class="jump-link" href="#vista-swing">5. Vista Swing</a>
+        <a class="jump-link" href="#ejercicios-dao">6. Ejercicios (6)</a>
+      </div>
     </aside>
   </header>
 
-  <main>
-    <section class="mx-auto max-w-6xl px-4 sm:px-6 pb-14 pt-16">
-      <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Lección 02 · Proyecto de datos</p>
-      <h1 id="context-title" class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">De la ficha a la colección</h1>
-      <p id="context-description" class="mt-5 max-w-2xl text-lg leading-8 text-ink/70"></p>
-      <ol class="mt-8 grid gap-4 md:grid-cols-3">
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>1. Modelo</strong><p class="mt-2 text-sm leading-6">Define la ficha y comprueba los valores de sus atributos.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>2. DAO</strong><p class="mt-2 text-sm leading-6">Guarda una colección de fichas. Busca por clave y evita que se repita.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>3. Programa</strong><p class="mt-2 text-sm leading-6">Llama al DAO y muestra qué pasó con cada operación.</p></li>
-      </ol>
-      <div class="mt-6 flex flex-wrap gap-4 text-sm font-semibold">
-        <a class="underline" href="#demo">Practicar el CRUD ↓</a>
-        <a class="underline" href="#proyecto-java">Explorar los archivos ↓</a>
-        <a class="underline" data-page="index.html#primeros-pasos" href="index.html#primeros-pasos">Repasar el modelo</a>
+  <main id="main-content">
+    <!-- HERO -->
+    <section class="hero-surface border-b border-ink/10">
+      <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+        <nav aria-label="Ruta de navegación" class="seo-breadcrumbs">
+          <a data-page="index.html" href="index.html">Guía Java 17</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">02 Patrón DAO (<span class="domain-dao-name">VehiculoDAO</span>)</span>
+        </nav>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="pro-badge pro-badge-indigo">Módulo 02 · Patrón Data Access Object</span>
+          <span class="pro-badge pro-badge-emerald">Colecciones ArrayList&lt;<span class="domain-model-name">Vehiculo</span>&gt; + 13 Consultas</span>
+        </div>
+        <h1 id="context-title" class="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">De la ficha individual a la colección gestionada</h1>
+        <p id="context-description" class="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg sm:leading-8"></p>
+
+        <ol class="mt-8 grid gap-4 md:grid-cols-3">
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-slate">Capa 1 · Modelo</span>
+            <h2 class="mt-3 text-base font-bold">Representa y valida una ficha</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70">La clase <code class="domain-model-name font-mono text-accent">Vehiculo</code> contiene los atributos privados y protege la integridad de cada objeto mediante sus getters, setters y <code class="font-mono">toString()</code>.</p>
+          </li>
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-indigo">Capa 2 · DAO</span>
+            <h2 class="mt-3 text-base font-bold">Administra la colección en memoria</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70"><code class="domain-dao-name font-mono text-accent">VehiculoDAO</code> encapsula un <code class="font-mono">ArrayList&lt;<span class="domain-model-name">Vehiculo</span>&gt;</code>: evita claves duplicadas, busca, actualiza, elimina y responde reportes.</p>
+          </li>
+          <li class="pro-card">
+            <span class="pro-badge pro-badge-emerald">Capa 3 · Vista / Main</span>
+            <h2 class="mt-3 text-base font-bold">Interactúa con la persona usuaria</h2>
+            <p class="mt-1.5 text-sm leading-6 text-ink/70">La clase principal o la ventana Swing <code class="domain-vista-name font-mono text-accent">VehiculoVista</code> piden operaciones al DAO sin manipular la lista directamente.</p>
+          </li>
+        </ol>
+
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a class="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-sm hover:bg-accent/90" href="#demo">Practicar en el Laboratorio CRUD ↓</a>
+          <a class="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-ink no-underline hover:bg-paper" href="#proyecto-java">Explorar código en el IDE ↓</a>
+          <a class="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-accent no-underline hover:bg-paper" href="#consultas-dao">Ver las 13 consultas del DAO ↓</a>
+          <a class="inline-flex items-center gap-2 rounded-full border border-ink/15 bg-white px-5 py-2.5 text-sm font-semibold text-ink no-underline hover:bg-paper" href="#ejercicios-dao">Ir a Ejercicios Prácticos ↓</a>
+        </div>
       </div>
     </section>
-    <section id="demo" class="scroll-mt-8 border-y border-ink/10 bg-white">
-      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-        <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Laboratorio CRUD</p>
-        <h2 id="demo-title" class="mt-4 text-3xl font-semibold tracking-tight"></h2>
-        <p id="demo-rule" class="mt-3 max-w-2xl leading-7 text-ink/65"></p>
-        <ol class="mt-6 list-decimal space-y-2 pl-6 text-sm leading-6 text-ink/75">
-          <li>Pulsa <strong>Cargar ejemplo</strong> y luego <strong>Guardar</strong>. La ficha aparece en la lista.</li>
-          <li>Vuelve a guardar la misma ficha. Observa qué ocurre cuando el DAO encuentra la clave repetida.</li>
-          <li>Pulsa <strong>Buscar</strong> con la misma clave. Cambia un atributo y pulsa <strong>Actualizar</strong>.</li>
-          <li>Pulsa <strong>Eliminar</strong> y vuelve a buscar. Comprueba qué devuelve la búsqueda.</li>
+
+    <!-- SECCIÓN 1: LABORATORIO CRUD INTERACTIVO -->
+    <section id="demo" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-emerald">Laboratorio CRUD en Memoria</span>
+          <h2 id="demo-title" class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl"></h2>
+          <p id="demo-rule" class="mt-2 text-base leading-7 text-ink/70"></p>
+        </div>
+
+        <ol class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <li class="rounded-xl border border-ink/10 bg-paper p-3.5 text-xs leading-5 text-ink/80">
+            <strong class="block text-ink">1. CREATE (Guardar)</strong>
+            Pulsa <em>Cargar datos de ejemplo</em> y luego <em>Guardar</em>. La ficha se añade al <code class="font-mono">ArrayList</code>.
+          </li>
+          <li class="rounded-xl border border-ink/10 bg-paper p-3.5 text-xs leading-5 text-ink/80">
+            <strong class="block text-ink">2. Regla de Unicidad</strong>
+            Intenta guardar otra vez la misma clave: <code class="domain-dao-name font-mono">VehiculoDAO</code> detecta el duplicado y devuelve <code class="font-mono">false</code>.
+          </li>
+          <li class="rounded-xl border border-ink/10 bg-paper p-3.5 text-xs leading-5 text-ink/80">
+            <strong class="block text-ink">3. READ &amp; UPDATE</strong>
+            Busca por clave, modifica cualquier atributo en el formulario y pulsa <em>Actualizar</em>.
+          </li>
+          <li class="rounded-xl border border-ink/10 bg-paper p-3.5 text-xs leading-5 text-ink/80">
+            <strong class="block text-ink">4. DELETE (Eliminar)</strong>
+            Pulsa <em>Eliminar</em> con la clave actual y comprueba que desaparece de la lista.
+          </li>
         </ol>
-        <div class="mt-8 grid gap-6 lg:grid-cols-2">
-          <form id="demo-form" class="space-y-4 rounded-3xl border border-ink/10 p-5 sm:p-7">
-            <div id="form-fields" class="grid gap-4 sm:grid-cols-2"></div>
-            <div class="flex flex-wrap gap-2">
-              <button type="submit" value="guardar" class="rounded-full bg-accent px-4 py-2 text-sm text-white">Guardar</button>
-              <button type="submit" value="buscar" class="rounded-full border border-ink/20 px-4 py-2 text-sm">Buscar</button>
-              <button type="submit" value="actualizar" class="rounded-full border border-ink/20 px-4 py-2 text-sm">Actualizar</button>
-              <button type="submit" value="eliminar" class="rounded-full border border-ink/20 px-4 py-2 text-sm">Eliminar</button>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <form id="demo-form" class="pro-card space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-ink/10 pb-3">
+              <h3 class="text-base font-bold">Formulario de Operación · <span class="domain-dao-name text-accent">VehiculoDAO</span></h3>
+              <button type="button" id="load-sample" class="rounded-full bg-soft-accent px-3 py-1 text-xs font-semibold text-accent">⚡ Cargar datos de ejemplo</button>
             </div>
-            <button type="button" id="load-sample" class="text-sm underline">Cargar ejemplo</button>
-            <p id="demo-status" role="status" class="min-h-6 break-words text-sm text-ink/70"></p>
+            <div id="form-fields" class="grid gap-4 sm:grid-cols-2"></div>
+            <div class="flex flex-wrap gap-2 pt-2">
+              <button type="submit" value="guardar" class="rounded-xl bg-accent px-4 py-2.5 text-xs font-bold text-white shadow-sm">CREATE · Guardar</button>
+              <button type="submit" value="buscar" class="rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-xs font-semibold">READ · Buscar</button>
+              <button type="submit" value="actualizar" class="rounded-xl border border-ink/20 bg-white px-4 py-2.5 text-xs font-semibold">UPDATE · Actualizar</button>
+              <button type="submit" value="eliminar" class="rounded-xl border border-rose-300 bg-rose-50 px-4 py-2.5 text-xs font-semibold text-rose-900">DELETE · Eliminar</button>
+            </div>
+            <p id="demo-status" role="status" class="min-h-6 rounded-lg bg-paper px-3 py-2 font-mono text-xs text-ink/80"></p>
           </form>
-          <div class="min-w-0 rounded-3xl bg-paper p-5 sm:p-7">
-            <h3 class="font-semibold">Registros en memoria</h3>
-            <ul id="demo-records" class="mt-3 max-h-48 space-y-2 overflow-auto text-sm"></ul>
-            <p class="mt-4 text-xs text-ink/65">Cada contexto tiene su propia lista durante la sesión de la página.</p>
-            <a href="#proyecto-java" class="mt-4 inline-block text-sm font-semibold underline">Ver los archivos Java de este contexto ↓</a>
+
+          <div class="pro-card flex flex-col justify-between bg-paper">
+            <div>
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-bold">Estado de <code class="font-mono text-sm text-accent">ArrayList&lt;<span class="domain-model-name">Vehiculo</span>&gt;</code></h3>
+                <span class="pro-badge pro-badge-slate">RAM</span>
+              </div>
+              <p class="mt-1 text-xs text-ink/65">Cada elemento representa una referencia a un objeto <code class="domain-model-name font-mono">Vehiculo</code> validado dentro del DAO:</p>
+              <ul id="demo-records" class="mt-4 max-h-60 space-y-2 overflow-auto text-sm"></ul>
+            </div>
+            <div class="mt-5 border-t border-ink/10 pt-3 text-xs text-ink/65">
+              <p>Cada dominio mantiene su propia colección independiente durante la sesión de estudio.</p>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="proyecto-java" class="scroll-mt-8 border-t border-ink/10">
-      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-        <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Código del proyecto</p>
-        <h2 id="project-title" class="mt-4 text-3xl font-semibold tracking-tight"></h2>
-        <p id="project-description" class="mt-3 max-w-3xl leading-7 text-ink/65"></p>
+    <!-- SECCIÓN 2: VISOR IDE DE ARCHIVOS DEL PROYECTO -->
+    <section id="proyecto-java" class="border-b border-ink/10 bg-paper">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Explorador de Código Fuente</span>
+          <h2 id="project-title" class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl"></h2>
+          <p id="project-description" class="mt-3 text-base leading-7 text-ink/70"></p>
+        </div>
+
         <div class="ide mt-6">
           <aside class="ide-tree" aria-labelledby="project-tree-heading">
-            <h3 id="project-tree-heading" class="ide-heading">Projects</h3>
+            <h3 id="project-tree-heading" class="ide-heading">Explorador de Paquetes Maven</h3>
             <div id="project-files" role="group" aria-label="Archivos del proyecto"></div>
           </aside>
           <div class="min-w-0">
             <div class="ide-tab flex flex-wrap items-center justify-between gap-2">
-              <span id="project-tab"></span>
-              <button type="button" id="copy-project-code" class="rounded border border-slate-400 bg-white px-2 py-1 text-xs">Copiar archivo</button>
+              <span id="project-tab" class="font-mono text-xs font-bold text-accent"></span>
+              <button type="button" id="copy-project-code" class="rounded-lg border border-ink/20 bg-white px-3 py-1 text-xs font-semibold hover:bg-paper">Copiar archivo completo</button>
             </div>
-            <p id="project-path" class="break-all border-b border-slate-200 px-3 py-2 font-mono text-xs text-slate-600"></p>
+            <p id="project-path" class="break-all border-b border-slate-200 bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-600"></p>
             <div class="ide-source" tabindex="0" aria-label="Código fuente">
               <pre id="project-lines" class="ide-gutter" aria-hidden="true"></pre>
               <pre><code id="project-code"></code></pre>
             </div>
           </div>
         </div>
-        <p id="project-copy-status" role="status" class="mt-2 text-sm"></p>
-        <a href="#demo" class="mt-5 inline-block text-sm font-semibold underline">Volver a la simulación CRUD ↑</a>
-        <a data-page="junit.html" href="junit.html" class="mt-5 block font-semibold underline">Continuar a JUnit →</a>
+        <p id="project-copy-status" role="status" class="mt-2 text-xs font-medium text-accent"></p>
       </div>
     </section>
 
+    <!-- SECCIÓN 3: EXPLICACIÓN PROFUNDA DEL PATRÓN DAO Y OPERACIONES CRUD -->
     <div id="vehicle-guide">
-    <section id="dao" class="scroll-mt-8">
-      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-24">
-        <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
-          <div>
-            <p class="font-mono text-xs uppercase tracking-[0.18em] text-ink/45">02 / Ahora, el DAO</p>
-            <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">El DAO administra los datos del modelo.</h2>
-            <p class="mt-5 text-base leading-7 text-ink/65">
-              DAO significa <em>Data Access Object</em> (objeto de acceso a datos). Es una clase que concentra las tareas para guardar, buscar, actualizar y eliminar datos. Así, el resto del programa puede pedir esas operaciones sin ocuparse de cómo se recorren o modifican los datos.
+      <section id="dao" class="border-b border-ink/10 bg-white">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <div class="grid gap-10 lg:grid-cols-[0.88fr_1.12fr] lg:items-center">
+            <div>
+              <span class="pro-badge pro-badge-indigo">Arquitectura en Capas</span>
+              <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">¿Cómo funciona <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code> por dentro?</h2>
+              <p class="mt-4 text-base leading-7 text-ink/70">
+                <strong>DAO</strong> (<em>Data Access Object</em>) separa la lógica de almacenamiento del resto de la aplicación. En lugar de que la ventana gráfica o el método <code class="font-mono text-sm">main</code> manipulen un <code class="font-mono text-sm">ArrayList</code> desordenadamente, le piden a <code class="domain-dao-name font-mono text-sm">VehiculoDAO</code> que guarde, busque, actualice, elimine o filtre objetos <code class="domain-model-name font-mono text-sm">Vehiculo</code>.
+              </p>
+              <div class="mt-5 rounded-2xl border border-ink/10 bg-paper p-5">
+                <p class="font-mono text-xs font-bold uppercase tracking-wider text-accent">El atributo contenedor en <span class="domain-dao-file">VehiculoDAO.java</span></p>
+                <pre class="mt-2 overflow-x-auto rounded-xl bg-ink p-3.5 font-mono text-xs text-white"><code id="dao-list-declaration">private final ArrayList&lt;Vehiculo&gt; vehiculos = new ArrayList&lt;&gt;();</code></pre>
+                <ul class="mt-3 space-y-1.5 text-xs leading-5 text-ink/75">
+                  <li>• <strong><code class="font-mono">private</code></strong>: Ninguna otra clase puede acceder a la lista sin pasar por los métodos del DAO.</li>
+                  <li>• <strong><code class="font-mono">final</code></strong>: La referencia a la lista no puede reasignarse a otra lista distinta, pero sí podemos usar <code class="font-mono">.add()</code> y <code class="font-mono">.remove()</code>.</li>
+                  <li>• <strong><code class="font-mono">&lt;<span class="domain-model-name">Vehiculo</span>&gt;</code> (Genéricos)</strong>: Garantiza en tiempo de compilación que solo puedan guardarse objetos de tipo <code class="domain-model-name font-mono">Vehiculo</code>.</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="rounded-3xl bg-ink p-6 text-white shadow-xl sm:p-8">
+              <p class="font-mono text-xs uppercase tracking-widest text-white/50">Flujo de una petición en la arquitectura</p>
+              <div class="mt-6 grid gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
+                <div class="rounded-2xl bg-white/[0.07] p-4">
+                  <p class="font-mono text-xs text-lime">Capa 01</p>
+                  <p class="mt-1 font-bold">Vista / Main</p>
+                  <p class="mt-1 text-xs leading-5 text-white/60">Captura datos y crea <code class="font-mono">new <span class="domain-model-name">Vehiculo</span>(...)</code></p>
+                </div>
+                <span class="hidden text-lime sm:block" aria-hidden="true">→</span>
+                <div class="rounded-2xl border border-lime/40 bg-lime/[0.1] p-4">
+                  <p class="font-mono text-xs text-lime">Capa 02</p>
+                  <p class="mt-1 font-bold"><span class="domain-dao-name">VehiculoDAO</span></p>
+                  <p class="mt-1 text-xs leading-5 text-white/70">Verifica que no sea nulo ni tenga <span class="domain-key-lower">patente</span> repetida</p>
+                </div>
+                <span class="hidden text-lime sm:block" aria-hidden="true">→</span>
+                <div class="rounded-2xl bg-white/[0.07] p-4">
+                  <p class="font-mono text-xs text-lime">Capa 03</p>
+                  <p class="mt-1 font-bold">ArrayList / BD</p>
+                  <p class="mt-1 text-xs leading-5 text-white/60">Almacena o consulta las referencias</p>
+                </div>
+              </div>
+
+              <div class="mt-6 grid grid-cols-2 gap-3 border-t border-white/15 pt-6 sm:grid-cols-4">
+                <div class="rounded-xl bg-white/[0.05] p-3">
+                  <p class="font-mono text-[11px] text-lime">CREATE</p>
+                  <p class="mt-1 text-sm font-semibold">guardar(obj)</p>
+                  <p class="mt-0.5 text-[11px] text-white/55">Retorna <code class="font-mono">boolean</code></p>
+                </div>
+                <div class="rounded-xl bg-white/[0.05] p-3">
+                  <p class="font-mono text-[11px] text-lime">READ</p>
+                  <p class="mt-1 text-sm font-semibold">buscar(clave)</p>
+                  <p class="mt-0.5 text-[11px] text-white/55">Retorna <code class="domain-model-name font-mono">Vehiculo</code></p>
+                </div>
+                <div class="rounded-xl bg-white/[0.05] p-3">
+                  <p class="font-mono text-[11px] text-lime">UPDATE</p>
+                  <p class="mt-1 text-sm font-semibold">actualizar(obj)</p>
+                  <p class="mt-0.5 text-[11px] text-white/55">Retorna <code class="font-mono">boolean</code></p>
+                </div>
+                <div class="rounded-xl bg-white/[0.05] p-3">
+                  <p class="font-mono text-[11px] text-lime">DELETE</p>
+                  <p class="mt-1 text-sm font-semibold">eliminar(clave)</p>
+                  <p class="mt-0.5 text-[11px] text-white/55">Retorna <code class="font-mono">boolean</code></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Análisis dinámico de los 4 métodos CRUD -->
+          <div id="dao-crud-cards" class="mt-12 grid gap-6 lg:grid-cols-2"></div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 4: LOS 13 MÉTODOS DE CONSULTA Y REPORTES ("PREGUNTAS AL DAO") -->
+      <section id="consultas-dao" class="border-b border-ink/10 bg-paper">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <div class="max-w-3xl">
+            <span class="pro-badge pro-badge-indigo">Paso 04 · Consultas y Reportes en Java</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Los 13 métodos de consulta de <code class="domain-dao-file font-mono text-accent">VehiculoDAO.java</code></h2>
+            <p class="mt-3 text-base leading-7 text-ink/70">
+              Más allá de las 4 operaciones CRUD básicas, <code class="domain-dao-name font-mono text-sm">VehiculoDAO</code> implementa <strong>13 métodos de negocio ("preguntas")</strong> adaptados al dominio <strong class="domain-title-name">Vehículo</strong>. Todos siguen 4 patrones algorítmicos fundamentales:
             </p>
-            <p class="mt-4 text-base leading-7 text-ink/65">
-              En este proyecto, esa clase es <code class="rounded bg-white px-1.5 py-0.5 font-mono text-sm text-ink">VehiculoDAO</code>. Su atributo es una lista en memoria y sus métodos permiten guardar, buscar, actualizar y eliminar usando la patente como identificador de búsqueda.
+          </div>
+
+          <div id="dao-queries-cards" class="mt-8 grid gap-6 lg:grid-cols-2"></div>
+
+          <!-- Tabla resumen dinámica de los 18 métodos -->
+          <div class="mt-10">
+            <h3 class="text-xl font-bold">Mapa rápido de los métodos de <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h3>
+            <div class="table-scroll mt-4">
+              <table class="pro-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Firma del Método en <span class="domain-dao-name">VehiculoDAO</span></th>
+                    <th>Tipo de Retorno</th>
+                    <th>Técnica Java Utilizada</th>
+                  </tr>
+                </thead>
+                <tbody id="dao-methods-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 5: LA VISTA SWING Y SU INTEGRACIÓN -->
+      <section id="vista-swing" class="border-b border-ink/10 bg-white">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <div class="max-w-3xl">
+            <span class="pro-badge pro-badge-amber">Paso 05 · Interfaz Gráfica Swing (JFrame)</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Cómo funciona <code class="domain-vista-file font-mono text-accent">VehiculoVista.java</code> y cómo conectarla a <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h2>
+            <p class="mt-3 text-base leading-7 text-ink/70">
+              Analicemos cómo una ventana gráfica <code class="font-mono text-sm">JFrame</code> lee los controles del formulario para construir un objeto <code class="domain-model-name font-mono text-sm">Vehiculo</code> y delegar su almacenamiento en <code class="domain-dao-name font-mono text-sm">VehiculoDAO</code>:
             </p>
           </div>
 
-          <div class="rounded-3xl bg-ink p-7 text-white sm:p-9">
-            <p class="font-mono text-xs uppercase tracking-widest text-white/45">El recorrido de los datos</p>
-            <div class="mt-7 grid gap-3 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center">
-              <div class="rounded-2xl bg-white/[0.07] p-4">
-                <p class="font-mono text-xs text-lime">01</p>
-                <p class="mt-2 font-semibold">Vista</p>
-                <p class="mt-1 text-xs leading-5 text-white/55">Interfaz y acciones</p>
-              </div>
-              <span class="hidden text-lime sm:block" aria-hidden="true">→</span>
-              <div class="rounded-2xl border border-lime/40 bg-lime/[0.08] p-4">
-                <p class="font-mono text-xs text-lime">02</p>
-                <p class="mt-2 font-semibold">VehiculoDAO</p>
-                <p class="mt-1 text-xs leading-5 text-white/55">Reglas para operar</p>
-              </div>
-              <span class="hidden text-lime sm:block" aria-hidden="true">→</span>
-              <div class="rounded-2xl bg-white/[0.07] p-4">
-                <p class="font-mono text-xs text-lime">03</p>
-                <p class="mt-2 font-semibold">ArrayList</p>
-                <p class="mt-1 text-xs leading-5 text-white/55">Vehículos en memoria</p>
-              </div>
-              <span class="text-center text-lime sm:hidden" aria-hidden="true">↓</span>
-              <span class="text-center text-lime sm:hidden" aria-hidden="true">↓</span>
-            </div>
-            <p class="mt-6 border-t border-white/10 pt-5 text-sm leading-6 text-white/55">
-              En una aplicación conectada a una base de datos, el DAO podría encargarse de comunicarse con ella. Aquí la lista vive solo mientras se ejecuta el programa.
+          <div id="swing-integration-cards" class="mt-8 grid gap-6 lg:grid-cols-2"></div>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 6: EJERCICIOS PRÁCTICOS DINÁMICOS DEL DAO -->
+      <section id="ejercicios-dao" class="border-b border-ink/10 bg-paper">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+          <div class="max-w-3xl">
+            <span class="pro-badge pro-badge-indigo">Paso 06 · Práctica Guiada de Colecciones y DAO</span>
+            <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">6 Ejercicios Prácticos de <code class="domain-dao-file font-mono text-accent">VehiculoDAO.java</code></h2>
+            <p class="mt-3 text-base leading-7 text-ink/70">
+              Pon a prueba tu manejo de <code class="font-mono text-sm">ArrayList&lt;<span class="domain-model-name">Vehiculo</span>&gt;</code>, ciclos, búsquedas y encapsulamiento resolviendo estos desafíos del dominio <strong class="domain-title-name">Vehículo</strong>:
             </p>
           </div>
-        </div>
 
-        <div class="mt-14 overflow-hidden rounded-3xl border border-ink/10 bg-white">
-          <div class="grid md:grid-cols-[0.75fr_1.25fr]">
-            <div class="border-b border-ink/10 p-7 md:border-b-0 md:border-r sm:p-9">
-              <p class="font-mono text-xs uppercase tracking-widest text-ink/45">Operaciones principales</p>
-              <h3 class="mt-4 text-2xl font-semibold">CRUD</h3>
-              <p class="mt-3 text-sm leading-6 text-ink/60">Las acciones que <code class="font-mono">main</code> puede invocar sin manipular directamente la lista.</p>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-4">
-              <div class="border-b border-r border-ink/10 p-6 sm:border-b-0">
-                <p class="font-mono text-xs text-ink/40">CREATE</p>
-                <p class="mt-3 font-semibold">Guardar</p>
-                <p class="mt-1 text-xs leading-5 text-ink/55">Rechaza nulos y patentes repetidas.</p>
-              </div>
-              <div class="border-b border-ink/10 p-6 sm:border-b-0 sm:border-r">
-                <p class="font-mono text-xs text-ink/40">READ</p>
-                <p class="mt-3 font-semibold">Buscar</p>
-                <p class="mt-1 text-xs leading-5 text-ink/55">Localiza un vehículo por patente.</p>
-              </div>
-              <div class="border-r border-ink/10 p-6">
-                <p class="font-mono text-xs text-ink/40">UPDATE</p>
-                <p class="mt-3 font-semibold">Actualizar</p>
-                <p class="mt-1 text-xs leading-5 text-ink/55">Modifica los datos del vehículo encontrado.</p>
-              </div>
-              <div class="p-6">
-                <p class="font-mono text-xs text-ink/40">DELETE</p>
-                <p class="mt-3 font-semibold">Eliminar</p>
-                <p class="mt-1 text-xs leading-5 text-ink/55">Quita el vehículo identificado por patente.</p>
-              </div>
-            </div>
+          <div id="dao-exercises-grid" class="mt-8 grid gap-6 lg:grid-cols-2"></div>
 
+          <div class="mt-10 flex flex-col items-start justify-between gap-4 rounded-3xl bg-ink p-7 text-white sm:flex-row sm:items-center sm:p-9">
+            <div>
+              <span class="font-mono text-xs uppercase tracking-widest text-lime">Siguiente Módulo · 03 Pruebas JUnit 5</span>
+              <h3 class="mt-2 text-xl font-bold sm:text-2xl">¿Cómo automatizar las pruebas de <span class="domain-model-name text-lime">Vehiculo</span> y <span class="domain-dao-name text-lime">VehiculoDAO</span>?</h3>
+              <p class="mt-1 text-sm text-white/70">Aprende a escribir pruebas unitarias con <code class="font-mono text-lime">@Test</code>, aserciones de JUnit Jupiter y reportes de cobertura con JaCoCo.</p>
+            </div>
+            <a data-page="junit.html" href="junit.html" class="shrink-0 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink no-underline transition hover:brightness-95">
+              Continuar a 03 JUnit →
+            </a>
           </div>
         </div>
-
-            <div class="mt-8 grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
-              <div class="rounded-2xl border border-ink/10 p-6">
-                <p class="font-mono text-xs uppercase tracking-widest text-ink/45">El almacenamiento actual</p>
-                <pre class="mt-4 overflow-x-auto rounded-xl bg-paper p-4 font-mono text-xs leading-5"><code>private final ArrayList&lt;Vehiculo&gt; vehiculos
-            = new ArrayList&lt;&gt;();</code></pre>
-                <p class="mt-3 text-sm leading-6 text-ink/60"><code class="font-mono">ArrayList</code> es la lista que contiene los objetos. <code class="font-mono">private</code> limita el acceso directo desde otras clases. <code class="font-mono">final</code> evita reemplazar la lista por otra, pero sí permite agregar o quitar elementos. Como no se escribe en disco, al cerrar la aplicación se pierde su contenido.</p>
-              </div>
-              <div class="rounded-2xl bg-paper p-6">
-                <p class="font-mono text-xs uppercase tracking-widest text-ink/45">Consulta adicional en main</p>
-                <pre class="mt-4 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-xs leading-5 text-white"><code>for (Vehiculo v : dao.listarElectricos()) {
-    System.out.println(v.getMarca()
-            + " " + v.getModelo());
-}
-System.out.println(dao.contarElectricos());</code></pre>
-                <p class="mt-3 text-sm leading-6 text-ink/60"><code class="font-mono">listarElectricos()</code> recorre la lista y devuelve otra lista con los vehículos cuyo <code class="font-mono">isElectrico()</code> es <code class="font-mono">true</code>. El <code class="font-mono">for</code> imprime cada resultado; <code class="font-mono">contarElectricos()</code> hace el mismo filtro, pero devuelve un número.</p>
-              </div>
-            </div>
-
-            <div class="mt-10">
-              <div class="max-w-2xl">
-                <p class="font-mono text-xs uppercase tracking-widest text-ink/45">Siguiendo el código</p>
-                <h3 class="mt-3 text-2xl font-semibold tracking-tight">¿Qué hace cada método por dentro?</h3>
-                <p class="mt-3 text-sm leading-6 text-ink/60">Todos trabajan sobre el mismo atributo <code class="font-mono">vehiculos</code>. La lista comienza vacía cuando se construye el DAO.</p>
-              </div>
-              <div class="mt-6 grid gap-4 lg:grid-cols-2">
-                <article class="overflow-hidden rounded-2xl border border-ink/10">
-                  <div class="border-b border-ink/10 px-5 py-3 font-mono text-xs text-ink/50">1. Guardar y evitar duplicados</div>
-                  <pre class="overflow-x-auto bg-ink p-5 text-xs leading-5 text-white sm:text-sm"><code>public boolean guardar(Vehiculo vehiculo) {
-    if (vehiculo == null) return false;
-    if (buscar(vehiculo.getPatente()) != null) {
-        return false;
-    }
-    vehiculos.add(vehiculo);
-    return true;
-}</code></pre>
-                  <div class="p-5 text-sm leading-6 text-ink/60">
-                    <p><code class="font-mono">null</code> no se puede guardar. Luego busca si ya hay un auto con esa patente: si lo encuentra, rechaza el duplicado. Si no, <code class="font-mono">add</code> lo agrega al final y devuelve <code class="font-mono">true</code>.</p>
-                  </div>
-                </article>
-                <article class="overflow-hidden rounded-2xl border border-ink/10">
-                  <div class="border-b border-ink/10 px-5 py-3 font-mono text-xs text-ink/50">2. Buscar: recorrer hasta encontrar</div>
-                  <pre class="overflow-x-auto bg-ink p-5 text-xs leading-5 text-white sm:text-sm"><code>public Vehiculo buscar(String patente) {
-    for (Vehiculo vehiculo : vehiculos) {
-            if (vehiculo.getPatente().equals(patente)) {
-                return vehiculo;
-            }
-    }
-    return null;
-}</code></pre>
-                  <div class="p-5 text-sm leading-6 text-ink/60">
-                    <p>El <code class="font-mono">for</code> visita cada elemento. Si la patente coincide, devuelve ese objeto inmediatamente. Si termina el recorrido sin coincidencia, devuelve <code class="font-mono">null</code>. Por eso quien llama debe comprobar si el resultado es <code class="font-mono">null</code>.</p>
-                  </div>
-                </article>
-                <article class="overflow-hidden rounded-2xl border border-ink/10">
-                  <div class="border-b border-ink/10 px-5 py-3 font-mono text-xs text-ink/50">3. Actualizar: encontrar y copiar campos</div>
-                  <pre class="overflow-x-auto bg-ink p-5 text-xs leading-5 text-white sm:text-sm"><code>Vehiculo encontrado = buscar(vehiculo.getPatente());
-if (encontrado == null) return false;
-
-encontrado.setColor(vehiculo.getColor());
-encontrado.setModelo(vehiculo.getModelo());
-// También copia código, marca, año,
-// tipo, transmisión y estados.
-return true;</code></pre>
-                  <div class="p-5 text-sm leading-6 text-ink/60">
-                    <p>Usa la patente del objeto recibido para ubicar el registro existente. Si no existe, devuelve <code class="font-mono">false</code>; si existe, copia sus demás valores al objeto guardado y devuelve <code class="font-mono">true</code>. La patente no se cambia: el setter está comentado.</p>
-                    <p class="mt-3">En el <code class="font-mono">main</code> de este proyecto, primero se obtiene el vehículo con <code class="font-mono">buscar</code> y luego se cambia su color. <code class="font-mono">buscar</code> devuelve la misma referencia al objeto que está en la lista, así que ese cambio ya afecta al objeto guardado; después <code class="font-mono">actualizar</code> vuelve a copiar sus campos. Este detalle ocurre porque la lista guarda referencias a objetos, no copias independientes.</p>
-                  </div>
-                </article>
-                <article class="overflow-hidden rounded-2xl border border-ink/10">
-                  <div class="border-b border-ink/10 px-5 py-3 font-mono text-xs text-ink/50">4. Eliminar: quitar el registro de la lista</div>
-                  <pre class="overflow-x-auto bg-ink p-5 text-xs leading-5 text-white sm:text-sm"><code>int indice = 0;
-for (Vehiculo vehiculo : vehiculos) {
-    if (vehiculo.getPatente().equals(patente)) {
-    vehiculos.remove(indice);
-    return true;
-    }
-    indice++;
-}
-return false;</code></pre>
-                  <div class="p-5 text-sm leading-6 text-ink/60">
-                    <p>Compara cada patente y lleva un contador de posición. Al encontrar coincidencia, quita ese índice y devuelve <code class="font-mono">true</code>. Si no encuentra la patente, devuelve <code class="font-mono">false</code>.</p>
-                  </div>
-                </article>
-              </div>
-            </div>
-
-            <div class="mt-10 grid gap-6 rounded-3xl bg-paper p-7 sm:p-9 lg:grid-cols-2">
-              <div>
-                <p class="font-mono text-xs uppercase tracking-widest text-ink/45">Ejemplo del main real</p>
-                <h3 class="mt-3 text-xl font-semibold">Buscar y revisar el resultado</h3>
-                <pre class="mt-4 overflow-x-auto rounded-2xl bg-ink p-5 text-xs leading-5 text-white sm:text-sm"><code>Vehiculo encontrado = dao.buscar("ABCD12");
-if (encontrado == null) {
-    System.out.println("Vehiculo no encontrado");
-} else {
-    System.out.println(encontrado.toString());
-}</code></pre>
-              </div>
-              <div class="self-center text-sm leading-6 text-ink/65">
-                <p><code class="font-mono">dao.buscar("ABCD12")</code> llama al método de búsqueda. El resultado se guarda en <code class="font-mono">encontrado</code>. Como un vehículo puede no existir, el <code class="font-mono">if</code> maneja los dos casos: <code class="font-mono">null</code> significa “no encontrado”; cualquier objeto significa “encontrado” y se puede imprimir o consultar.</p>
-                <p class="mt-4">En el <code class="font-mono">main</code> actual, el programa crea 10 vehículos, los guarda, intenta guardar dos veces el mismo <code class="font-mono">v10</code> y luego ejecuta ejemplos de listado, búsqueda, actualización, eliminación y reportes.</p>
-                <p class="mt-4">La primera vez que se guarda <code class="font-mono">v10</code>, <code class="font-mono">guardar</code> devuelve <code class="font-mono">true</code>. En el segundo intento encuentra la misma patente, no lo agrega de nuevo y devuelve <code class="font-mono">false</code>.</p>
-                <p class="mt-4">Si se crea un vehículo con año 2014, por ejemplo, el constructor lanza <code class="font-mono">IllegalArgumentException</code>. El <code class="font-mono">main</code> de muestra no captura esa excepción, así que el programa se detiene en ese punto y no sigue con las instrucciones siguientes.</p>
-              </div>
-            </div>
-          </div>
-      </div>
-    </section>
-
-    <section id="mejoras" class="scroll-mt-8 border-t border-ink/10 bg-white">
-      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-20 sm:py-24">
-        <div class="max-w-2xl">
-          <p class="font-mono text-xs uppercase tracking-[0.18em] text-ink/45">Lo que mejora el patrón</p>
-          <h2 class="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">Menos responsabilidades mezcladas.</h2>
-          <p class="mt-5 text-base leading-7 text-ink/65">
-            Sin un DAO, el código de la interfaz o de <code class="font-mono">main</code> tendría que recorrer y modificar la colección por su cuenta. El patrón reúne esa lógica en un solo lugar y deja claro quién hace cada trabajo.
-          </p>
-        </div>
-        <div class="mt-10 grid gap-4 md:grid-cols-3">
-          <article class="rounded-2xl bg-paper p-6">
-            <span class="font-mono text-xs text-ink/40">01 — Separación</span>
-            <h3 class="mt-4 text-lg font-semibold">Cada clase se enfoca</h3>
-            <p class="mt-2 text-sm leading-6 text-ink/60"><code class="font-mono">Vehiculo</code> representa y valida un auto; <code class="font-mono">VehiculoDAO</code> administra la colección. El <code class="font-mono">main</code> coordina las llamadas.</p>
-          </article>
-          <article class="rounded-2xl bg-paper p-6">
-            <span class="font-mono text-xs text-ink/40">02 — Reutilización</span>
-            <h3 class="mt-4 text-lg font-semibold">Una forma consistente de operar</h3>
-            <p class="mt-2 text-sm leading-6 text-ink/60">Guardar evita patentes duplicadas; las búsquedas y filtros se resuelven desde los mismos métodos, en vez de repetir ciclos por el programa.</p>
-          </article>
-          <article class="rounded-2xl bg-paper p-6">
-            <span class="font-mono text-xs text-ink/40">03 — Evolución</span>
-            <h3 class="mt-4 text-lg font-semibold">Más fácil de cambiar</h3>
-            <p class="mt-2 text-sm leading-6 text-ink/60">El almacenamiento puede evolucionar de una lista en memoria a una base de datos manteniendo las operaciones que invoca el resto del programa.</p>
-          </article>
-        </div>
-        <p class="mt-6 max-w-3xl rounded-2xl border border-ink/10 p-5 text-sm leading-6 text-ink/55">
-          <strong class="text-ink">Límite actual del ejemplo:</strong> el DAO todavía usa un <code class="font-mono">ArrayList</code>, por lo que los datos se pierden al cerrar el programa; además, la ventana Swing mantiene su propia lista y aún no está conectada a <code class="font-mono">VehiculoDAO</code>. <code class="font-mono">listar()</code> también devuelve la lista interna directamente, así que quien la recibe podría modificarla sin pasar por los métodos del DAO. El patrón ordena el acceso, pero esta implementación todavía puede encapsular mejor la colección y agregar persistencia.
-        </p>
-      </div>
-    </section>
-
-    <section class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-      <div class="flex flex-col justify-between gap-6 rounded-3xl bg-lime p-7 sm:flex-row sm:items-center sm:p-10">
-        <div>
-          <p class="font-mono text-xs uppercase tracking-widest text-ink/55">En una frase</p>
-          <h2 class="mt-3 max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">El DAO ordena cómo se administra el inventario; la lista todavía no es permanente.</h2>
-        </div>
-        <span class="font-mono text-sm text-ink/65">AutomotoraDAO · Java</span>
-      </div>
-    </section>
+      </section>
     </div>
   </main>
 
-  <footer class="border-t border-ink/10">
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between">
-      <p>Laboratorio de modelos y DAO en Java · basado en Automotora</p>
-      <p>Guía de Java · Modelo, DAO, JUnit y bases de datos</p>
+  <footer class="border-t border-ink/10 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-ink/60 sm:px-6">
+      <nav aria-label="Mapa de módulos del curso Java" class="seo-footer-links">
+        <a data-page="index.html" href="index.html">01 Modelo POO en Java</a>
+        <a data-page="proyecto.html" href="proyecto.html">02 Patrón DAO con ArrayList</a>
+        <a data-page="junit.html" href="junit.html">03 Pruebas Unitarias JUnit 5 y JaCoCo</a>
+        <a data-page="base-datos.html" href="base-datos.html">04 Base de Datos JDBC (MySQL y Supabase)</a>
+        <a href="sitemap.xml">Sitemap XML</a>
+      </nav>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p><strong>Guía Interactiva Java 17</strong> · Arquitectura en capas (Modelo POO, DAO, JUnit 5 y JDBC SQL)</p>
+        <p>Optimizado para estudio en Web y Móvil · Java 17 + Maven + NetBeans</p>
+      </div>
     </div>
   </footer>
 </body>

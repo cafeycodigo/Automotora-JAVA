@@ -1,0 +1,19 @@
+{
+  "name": "Guía Interactiva de Arquitectura Java 17: Modelo POO, DAO, JUnit 5 y Base de Datos JDBC",
+  "short_name": "Guía Java 17",
+  "description": "Curso práctico e interactivo de programación en Java 17 con Maven y NetBeans: Modelo POO, Patrón DAO con ArrayList, Testing con JUnit 5 y JaCoCo, y Base de Datos SQL con JDBC (MySQL y PostgreSQL/Supabase).",
+  "lang": "es-CL",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#4338ca",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+

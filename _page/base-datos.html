@@ -1,10 +1,37 @@
 <!doctype html>
-<html lang="es">
+<html lang="es-CL">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Una guía sencilla del proyecto Automotora Java y su implementación con DAO.">
-  <title>Base de datos · Automotora Java</title>
+  <title>04 Base de Datos JDBC en Java 17: MySQL, PostgreSQL/Supabase y SQL · Guía Java</title>
+  <meta name="description" content="Aprende a conectar Java 17 con MySQL y PostgreSQL (Supabase) usando JDBC y Maven: ConexionBD, PreparedStatement, ResultSet, try-with-resources, simulador SQL y 6 ejercicios.">
+  <meta name="keywords" content="Java JDBC, MySQL Java Maven, PostgreSQL Supabase Java, ConexionBD Java, PreparedStatement SQL, ResultSet leerFila, try-with-resources JDBC, DAO SQL Java, NetBeans MySQL">
+  <meta name="author" content="Café y Código · curso-java.cafeycodigo.org">
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="theme-color" content="#4338ca">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="canonical" href="https://curso-java.cafeycodigo.org/base-datos.html">
+  <link rel="prev" href="https://curso-java.cafeycodigo.org/junit.html">
+
+  <!-- Open Graph / Facebook / WhatsApp / LinkedIn -->
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="es_CL">
+  <meta property="og:site_name" content="Curso Java · Café y Código">
+  <meta property="og:title" content="04 Base de Datos JDBC en Java 17: MySQL, PostgreSQL (Supabase), PreparedStatement y SQL">
+  <meta property="og:description" content="Conecta tu proyecto Java 17 y Maven a MySQL local o Supabase PostgreSQL con JDBC: esquema SQL, ConexionBD, DAO relacional, simulador y 6 ejercicios prácticos.">
+  <meta property="og:url" content="https://curso-java.cafeycodigo.org/base-datos.html">
+  <meta property="og:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+  <meta property="og:image:alt" content="Módulo 04 Persistencia con JDBC, MySQL y PostgreSQL en Java 17">
+
+  <!-- Twitter / X Cards -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="04 Base de Datos JDBC en Java 17: MySQL, Supabase PostgreSQL y SQL">
+  <meta name="twitter:description" content="Guía completa de JDBC en Java 17: DriverManager, PreparedStatement, ResultSet, try-with-resources y 6 ejercicios resueltos.">
+  <meta name="twitter:image" content="https://curso-java.cafeycodigo.org/og-cover.svg">
+
+  <!-- Preload & Styles -->
+  <link rel="preload" href="tailwind.css" as="style">
   <link rel="stylesheet" href="tailwind.css">
   <link rel="stylesheet" href="guia.css">
   <script src="proyectos.js" defer></script>
@@ -13,108 +40,378 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Datos Estructurados Schema.org (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "url": "https://curso-java.cafeycodigo.org/base-datos.html",
+        "headline": "04 Base de Datos JDBC en Java 17: MySQL, PostgreSQL (Supabase), PreparedStatement y ResultSet",
+        "description": "Cómo evolucionar un DAO en Java 17 desde memoria hacia una base de datos relacional MySQL o PostgreSQL usando JDBC, PreparedStatement y try-with-resources.",
+        "proficiencyLevel": "Intermediate",
+        "inLanguage": "es-CL",
+        "about": ["Java JDBC", "MySQL", "PostgreSQL Supabase", "PreparedStatement", "ResultSet"]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Curso Java 17",
+            "item": "https://curso-java.cafeycodigo.org/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "04 Base de Datos JDBC",
+            "item": "https://curso-java.cafeycodigo.org/base-datos.html"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Por qué se debe usar PreparedStatement con signos ? en lugar de concatenar variables en SQL?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "PreparedStatement precompila la sentencia SQL y escapa de forma segura cada parámetro asignado con setString, setInt o setBoolean, previniendo ataques de inyección SQL (SQL Injection)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuál es la diferencia entre executeUpdate() y executeQuery() en JDBC?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "executeUpdate() se utiliza para sentencias INSERT, UPDATE y DELETE y retorna el número de filas afectadas (int), mientras que executeQuery() se utiliza para consultas SELECT y retorna un objeto ResultSet con las filas recuperadas."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
 </head>
 <body data-lesson="base-datos" class="bg-paper font-sans text-ink antialiased">
-  <header class="guide-header border-b border-ink/10">
-    <nav class="guide-nav mx-auto grid max-w-6xl items-center gap-3 px-4 pt-4 sm:px-6" aria-label="Navegación principal">
-      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight">
-        <span class="grid h-9 w-9 place-items-center rounded-xl bg-accent text-white" aria-hidden="true">A</span>
-        <span><span id="context-brand">Automotora</span> <span class="text-ink/45">/ Java</span></span>
+  <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+  <header class="guide-header">
+    <nav class="guide-nav mx-auto max-w-6xl px-4 py-3 sm:px-6" aria-label="Navegación principal">
+      <a data-page="index.html" href="index.html" class="flex items-center gap-3 font-semibold tracking-tight text-ink no-underline">
+        <span class="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-accent font-mono text-sm font-bold text-white shadow-sm" aria-hidden="true">JV</span>
+        <span class="truncate"><span id="context-brand" class="font-bold">Automotora</span> <span class="text-ink/45">/ Guía Java</span></span>
       </a>
-      <div class="lesson-links grid gap-1 rounded-2xl bg-paper p-1 text-sm text-ink/75">
+      <div class="lesson-links" role="navigation" aria-label="Módulos del curso">
         <a id="nav-model" data-page="index.html" href="index.html">01 Modelo</a>
         <a id="nav-project" data-page="proyecto.html" href="proyecto.html">02 DAO</a>
         <a id="nav-tests" data-page="junit.html" href="junit.html">03 JUnit</a>
         <a id="nav-db" aria-current="page" data-page="base-datos.html" href="base-datos.html">04 Datos</a>
       </div>
-      <span class="guide-stack rounded-full bg-paper px-3 py-1.5 font-mono text-xs text-ink/75">Java · Maven</span>
+      <span class="guide-stack rounded-full border border-ink/10 bg-paper px-3 py-1 font-mono text-xs font-medium text-ink/75">JDBC · SQL · MySQL / Postgres</span>
     </nav>
-    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6" aria-label="Contexto de aprendizaje">
-      <p class="text-xs font-semibold text-ink/75">Contexto del ejemplo</p>
-      <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+    <aside id="selector" class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 sm:px-6" aria-label="Contexto de aprendizaje">
+      <div class="flex flex-wrap items-center gap-2">
+        <p class="text-xs font-semibold uppercase tracking-wider text-ink/60">Dominio:</p>
+        <div id="selector-buttons" role="group" aria-label="Ejemplos de dominio"></div>
+      </div>
+      <div class="section-nav-bar text-xs" aria-label="Secciones de esta lección">
+        <a class="jump-link" href="#conexion">1. Motor SQL</a>
+        <a class="jump-link" href="#anatomia-jdbc">2. API JDBC</a>
+        <a class="jump-link" href="#comparativa-dao">3. ArrayList vs SQL</a>
+        <a class="jump-link" href="#ide-jdbc">4. Proyecto IDE</a>
+        <a class="jump-link" href="#simulador-jdbc">5. Simulador SQL</a>
+        <a class="jump-link" href="#ejercicios-bd">6. Ejercicios (6)</a>
+      </div>
     </aside>
   </header>
 
-  <main>
-    <section id="conexion" class="mx-auto max-w-6xl px-4 sm:px-6 py-16">
-      <p class="font-mono text-xs uppercase tracking-widest text-ink/55">Lección 04 · Conexión a base de datos</p>
-      <h1 id="context-title" class="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Conecta Java con una base de datos</h1>
-      <p id="context-description" class="mt-5 max-w-2xl text-lg leading-8 text-ink/70"></p>
-      <div class="mt-6 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <label for="db-provider" class="block text-sm font-semibold">Elige tu base de datos</label>
-        <select id="db-provider" class="mt-2 rounded-lg border border-ink/20 bg-paper px-3 py-2 text-sm" aria-describedby="db-provider-help">
-          <option value="mysql">MySQL local</option>
-          <option value="supabase">Supabase (PostgreSQL)</option>
-        </select>
-        <p id="db-provider-help" class="mt-2 text-sm leading-6">Usa MySQL si tienes un servidor local o Supabase si tienes un proyecto PostgreSQL alojado. La selección cambia el código y los pasos de esta lección.</p>
-        <p class="mt-2 text-sm leading-6">Dependencia en <code>pom.xml</code> · <code id="db-driver" class="break-all"></code>. Al abrir o compilar el proyecto, Maven descarga el controlador.</p>
+  <main id="main-content">
+    <!-- HERO Y SELECTOR DE PROVEEDOR DE BASE DE DATOS -->
+    <section id="conexion" class="hero-surface border-b border-ink/10">
+      <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-16">
+        <nav aria-label="Ruta de navegación" class="seo-breadcrumbs">
+          <a data-page="index.html" href="index.html">Guía Java 17</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">04 Base de Datos JDBC (<span class="domain-dao-name">VehiculoDAO</span> SQL)</span>
+        </nav>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="pro-badge pro-badge-indigo">Módulo 04 · Persistencia Relacional con JDBC</span>
+          <span class="pro-badge pro-badge-emerald">MySQL Local &amp; Supabase PostgreSQL</span>
+        </div>
+        <h1 id="context-title" class="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">Conecta Java con una Base de Datos Real</h1>
+        <p id="context-description" class="mt-4 max-w-2xl text-base leading-7 text-ink/70 sm:text-lg sm:leading-8"></p>
+
+        <div class="mt-7 grid gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div class="pro-card">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <label for="db-provider" class="text-sm font-bold text-ink">Selecciona el motor de base de datos del proyecto:</label>
+              <span class="pro-badge pro-badge-indigo">Cambia el código automáticamente</span>
+            </div>
+            <select id="db-provider" class="mt-3 block w-full rounded-xl border border-ink/20 bg-paper px-4 py-2.5 font-semibold text-sm text-ink" aria-describedby="db-provider-help">
+              <option value="mysql">🐬 MySQL Local (localhost:3306 · XAMPP / Workbench)</option>
+              <option value="supabase">⚡ Supabase Cloud (PostgreSQL · Session Pooler SSL)</option>
+            </select>
+            <p id="db-provider-help" class="mt-3 text-xs leading-5 text-ink/70">
+              Usa <strong>MySQL local</strong> si trabajas con MySQL Server / Workbench o XAMPP en tu computador, o elige <strong>Supabase (PostgreSQL)</strong> para conectarte a una base de datos en la nube usando variables de entorno.
+            </p>
+            <div class="mt-3 rounded-xl bg-paper p-3 text-xs">
+              <span class="font-semibold text-ink/75">Driver Maven en <code>pom.xml</code>:</span>
+              <code id="db-driver" class="ml-1 break-all font-mono font-bold text-accent"></code>
+            </div>
+          </div>
+
+          <div class="rounded-3xl bg-ink p-6 text-white shadow-xl sm:p-7">
+            <p class="font-mono text-xs uppercase tracking-widest text-lime">Arquitectura de Persistencia JDBC</p>
+            <p class="mt-2 text-sm text-white/80">
+              Flujo completo: <strong>Vista / Main → <code class="domain-dao-name font-mono text-lime">VehiculoDAO</code> → <code class="font-mono text-lime">ConexionBD</code> → <span id="db-engine" class="underline">MySQL</span></strong>
+            </p>
+            <ol class="mt-4 space-y-2.5 text-xs leading-5 text-white/75">
+              <li><strong class="text-white">1. Tabla SQL (<code class="font-mono text-lime">esquema.sql</code>):</strong> <span id="db-table-description"></span></li>
+              <li><strong class="text-white">2. Conector Maven (<code class="font-mono text-lime">pom.xml</code>):</strong> Descarga el driver JDBC oficial para que <code class="font-mono">DriverManager.getConnection(...)</code> se conecte al motor SQL.</li>
+              <li><strong class="text-white">3. Consultas parametrizadas (<code class="font-mono text-lime">PreparedStatement</code>):</strong> Reemplaza cada <code class="font-mono">?</code> de forma segura evitando ataques de inyección SQL.</li>
+              <li><strong class="text-white">4. Mapeo de filas (<code class="font-mono text-lime">ResultSet</code>):</strong> El método privado <code class="font-mono">leerFila()</code> convierte cada fila SQL en un objeto Java <code class="font-mono">new <span class="domain-model-name">Vehiculo</span>(...)</code>.</li>
+            </ol>
+          </div>
+        </div>
       </div>
-      <ol class="mt-8 grid gap-4 md:grid-cols-2">
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>1. Crear el proyecto Maven y la tabla</strong><p id="db-table-description" class="mt-2 text-sm leading-6"></p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>2. Cargar el controlador y abrir la conexión</strong><p class="mt-2 text-sm leading-6">Copia la dependencia al bloque <code>&lt;dependencies&gt;</code> de tu <code>pom.xml</code>. Maven pone el controlador al alcance de Java y <code>ConexionBD</code> abre la conexión con <code>DriverManager</code>.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>3. Guardar y recuperar desde el DAO</strong><p class="mt-2 text-sm leading-6"><code>PreparedStatement</code> asigna un valor a cada <code>?</code>. <code>ResultSet</code> permite reconstruir un objeto con los datos de una fila. <code>try-with-resources</code> cierra los recursos.</p></li>
-        <li class="rounded-2xl border border-ink/10 bg-white shadow-sm p-5"><strong>4. Conectar la vista Swing</strong><p class="mt-2 text-sm leading-6">Como siguiente ejercicio, crea un <code>JFrame</code> en NetBeans. El formulario construye el objeto, los botones llaman al DAO y un <code>JTable</code> muestra el resultado de <code>listar()</code>.</p></li>
-      </ol>
-      <p class="mt-6 text-sm font-semibold">Flujo de datos · Vista o main → DAO → ConexionBD → <span id="db-engine">MySQL</span></p>
-      <div class="mt-6 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <h2 class="text-xl font-semibold">Estructura de carpetas</h2>
-        <p class="mt-2 text-sm leading-6">Guarda <code>pom.xml</code> y <code>esquema.sql</code> en la raíz del proyecto. Los archivos Java van en <code>src/main/java</code>, en la carpeta que corresponde al <code>package</code> de cada clase.</p>
-        <p class="mt-3 text-sm leading-6">Cuando agregues la vista Swing, créala en <code>src/main/java/cl/automotora/vista</code>. Las pruebas JUnit van bajo <code>src/test/java</code>.</p>
+    </section>
+
+    <!-- SECCIÓN 2: ANATOMÍA DE LA API JDBC EN JAVA -->
+    <section id="anatomia-jdbc" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Fundamentos de java.sql.*</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Las 6 piezas de JDBC que debes dominar</h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Cuando pasamos de <code class="domain-dao-name font-mono text-sm">VehiculoDAO</code> en memoria a una base de datos relacional, el paquete <code class="font-mono text-sm">java.sql</code> nos provee las clases estándar para conectarnos, enviar sentencias SQL y reconstruir objetos <code class="domain-model-name font-mono text-sm">Vehiculo</code>:
+          </p>
+        </div>
+
+        <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-indigo">1. DriverManager &amp; Connection</span>
+            <h3 class="mt-3 text-base font-bold">El canal de comunicación</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              <code class="font-mono">DriverManager.getConnection(url, user, pass)</code> autentica tus credenciales y devuelve un objeto <code class="font-mono">Connection</code> activo hacia el servidor MySQL o PostgreSQL. Centralizamos esto en <code class="font-mono">ConexionBD.conectar()</code>.
+            </p>
+          </article>
+
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-indigo">2. PreparedStatement (?)</span>
+            <h3 class="mt-3 text-base font-bold">Sentencias SQL precompiladas y seguras</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              Nunca concatenes variables con <code class="font-mono">+</code> dentro de un string SQL. Escribe <code class="font-mono">?</code> en la consulta y asigna cada parámetro por su posición (desde <code class="font-mono">1</code>) con <code class="font-mono">ps.setString(1, ...)</code>, <code class="font-mono">ps.setInt(...)</code> o <code class="font-mono">ps.setBoolean(...)</code>.
+            </p>
+          </article>
+
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-indigo">3. executeUpdate vs executeQuery</span>
+            <h3 class="mt-3 text-base font-bold">¿Escribir o leer datos?</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              • <strong><code class="font-mono">ps.executeUpdate()</code></strong> se usa para <code class="font-mono">INSERT</code>, <code class="font-mono">UPDATE</code> y <code class="font-mono">DELETE</code>. Devuelve un <code class="font-mono">int</code> con las filas afectadas (<code class="font-mono">== 1</code> significa éxito).<br>
+              • <strong><code class="font-mono">ps.executeQuery()</code></strong> se usa para <code class="font-mono">SELECT</code> y devuelve un <code class="font-mono">ResultSet</code>.
+            </p>
+          </article>
+
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-emerald">4. ResultSet y filas.next()</span>
+            <h3 class="mt-3 text-base font-bold">Recorrer las filas devueltas por SELECT</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              El cursor de un <code class="font-mono">ResultSet</code> comienza antes de la primera fila. Cada llamada a <code class="font-mono">filas.next()</code> avanza una fila y devuelve <code class="font-mono">true</code> si hay datos. Usamos <code class="font-mono">if (filas.next())</code> al buscar por clave única y <code class="font-mono">while (filas.next())</code> al listar.
+            </p>
+          </article>
+
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-emerald">5. try-with-resources</span>
+            <h3 class="mt-3 text-base font-bold">Cierre automático de conexiones</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              Al declarar <code class="font-mono">try (Connection con = ...; PreparedStatement ps = ...)</code>, Java garantiza que tanto el statement como la conexión se cierren automáticamente al salir del bloque, incluso si ocurre una excepción.
+            </p>
+          </article>
+
+          <article class="pro-card">
+            <span class="pro-badge pro-badge-amber">6. SQLException</span>
+            <h3 class="mt-3 text-base font-bold">Excepción verificada (Checked Exception)</h3>
+            <p class="mt-2 text-xs leading-5 text-ink/70">
+              <code class="font-mono">SQLException</code> es una excepción verificada: el compilador de Java exige declararla con <code class="font-mono">throws SQLException</code> en la firma del método o capturarla dentro de un bloque <code class="font-mono">try / catch (SQLException ex)</code>.
+            </p>
+          </article>
+        </div>
       </div>
+    </section>
+
+    <!-- SECCIÓN 3: COMPARATIVA DINÁMICO LADO A LADO (DAO MEMORIA VS DAO JDBC) -->
+    <section id="comparativa-dao" class="border-b border-ink/10 bg-paper">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Evolución del Patrón DAO</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">De <code class="font-mono text-accent">ArrayList</code> en memoria a <code class="font-mono text-accent">SQL</code> con JDBC en <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Observa la gran ventaja del patrón DAO: la clase <code class="domain-model-name font-mono text-sm">Vehiculo</code> y la ventana gráfica mantienen las mismas operaciones; solo cambia cómo <code class="domain-dao-name font-mono text-sm">VehiculoDAO</code> las ejecuta por dentro:
+          </p>
+        </div>
+
+        <div class="table-scroll mt-8">
+          <table class="pro-table">
+            <thead>
+              <tr>
+                <th>Operación DAO</th>
+                <th>En Memoria (<code>ArrayList&lt;<span class="domain-model-name">Vehiculo</span>&gt;</code>)</th>
+                <th>Con Base de Datos (<code>JDBC + SQL</code>)</th>
+              </tr>
+            </thead>
+            <tbody id="db-comparison-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 4: EXPLORADOR IDE DEL PROYECTO JDBC -->
+    <section id="ide-jdbc" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Código Fuente Completo del Proyecto JDBC</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Explora y copia cada archivo para <code id="db-project-heading" class="font-mono text-accent">AutomotoraMaven</code></h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Selecciona cualquier archivo en el árbol izquierdo (<code class="font-mono text-sm">esquema.sql</code>, <code class="font-mono text-sm">pom.xml</code>, <code class="domain-model-file font-mono text-sm">Vehiculo.java</code>, <code class="font-mono text-sm">ConexionBD.java</code>, <code class="domain-dao-file font-mono text-sm">VehiculoDAO.java</code> o la clase principal):
+          </p>
+        </div>
+
         <div class="ide mt-6">
           <aside class="ide-tree" aria-labelledby="project-tree-heading">
-            <h3 id="project-tree-heading" class="ide-heading">Projects</h3>
+            <h3 id="project-tree-heading" class="ide-heading">Estructura Maven + SQL</h3>
             <div id="project-files" role="group" aria-label="Archivos del proyecto"></div>
           </aside>
           <div class="min-w-0">
             <div class="ide-tab flex flex-wrap items-center justify-between gap-2">
-              <span id="project-tab"></span>
-              <button type="button" id="copy-project-code" class="rounded border border-slate-400 bg-white px-2 py-1 text-xs">Copiar archivo</button>
+              <span id="project-tab" class="font-mono text-xs font-bold text-accent"></span>
+              <button type="button" id="copy-project-code" class="rounded-lg border border-ink/20 bg-white px-3 py-1 text-xs font-semibold hover:bg-paper">Copiar archivo</button>
             </div>
-            <p id="project-path" class="break-all border-b border-slate-200 px-3 py-2 font-mono text-xs text-slate-600"></p>
+            <p id="project-path" class="break-all border-b border-slate-200 bg-slate-50 px-3 py-1.5 font-mono text-xs text-slate-600"></p>
             <div class="ide-source" tabindex="0" aria-label="Código fuente">
               <pre id="project-lines" class="ide-gutter" aria-hidden="true"></pre>
               <pre><code id="project-code"></code></pre>
             </div>
           </div>
         </div>
-        <p id="project-copy-status" role="status" class="mt-2 text-sm"></p>
-      <div class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <h2 class="text-xl font-semibold">Sigue el recorrido de la ficha</h2>
-        <p class="mt-2 text-sm leading-6">La simulación del navegador muestra la secuencia de conexión, escritura y lectura.</p>
-        <button id="run-db" type="button" class="mt-4 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-white">Ejecutar simulación</button>
-        <pre id="db-output" role="status" class="mt-4 whitespace-pre-wrap break-words rounded-lg bg-paper p-4 text-sm">Los resultados aparecerán aquí.</pre>
+        <p id="project-copy-status" role="status" class="mt-2 text-xs font-medium text-accent"></p>
       </div>
-      <details id="mysql-setup" open class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <summary class="cursor-pointer font-semibold">Ejecutar en NetBeans con MySQL</summary>
-        <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
-          <li>En NetBeans, elige <strong>File → New Project → Java with Maven → Java Application</strong>. Usa Java 17 y el grupo <code>cl.automotora</code>.</li>
-          <li>Abre <code>esquema.sql</code> en MySQL Workbench y ejecútalo. Copia el <code>pom.xml</code> y cada archivo Java en la ruta indicada.</li>
-          <li>El ejemplo se conecta a <code>localhost:3306</code> con el usuario <code>root</code> y una contraseña vacía. Ajusta esos valores en <code>ConexionBD.java</code> si tu instalación local usa otras credenciales.</li>
-          <li>Ejecuta la clase principal. Usa una clave de ejemplo distinta si ya insertaste la ficha. Comprueba la fila en Workbench con el <code>SELECT</code> al final de <code>esquema.sql</code>.</li>
-        </ol>
-        <a class="mt-3 inline-block text-sm underline" href="https://dev.mysql.com/doc/connector-j/en/connector-j-installing-maven.html">Documentación de MySQL Connector/J para Maven</a>
-      </details>
-      <details id="supabase-setup" open hidden class="mt-8 rounded-2xl border border-ink/10 bg-white shadow-sm p-5">
-        <summary class="cursor-pointer font-semibold">Ejecutar en NetBeans con Supabase</summary>
-        <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6">
-          <li>En el panel de tu proyecto Supabase, abre <strong>SQL Editor</strong> y ejecuta <code>esquema.sql</code>. La tabla se crea en el esquema <code>public</code> con seguridad por filas activada para el acceso por la API.</li>
-          <li>Abre <strong>Connect → Session pooler</strong> y toma de ahí el host, el puerto y el usuario. Usa la contraseña de la base de datos del proyecto.</li>
-          <li>Define estas variables en el entorno desde el que inicias NetBeans. Sustituye los campos de ejemplo por los de tu proyecto y conserva la contraseña fuera del código.</li>
-        </ol>
-        <pre class="mt-3 overflow-x-auto rounded-lg bg-paper p-4 text-sm"><code>SUPABASE_DB_URL=jdbc:postgresql://HOST_DEL_POOLER:5432/postgres?sslmode=require
+    </section>
+
+    <!-- SECCIÓN 5: SIMULADOR INTERACTIVO DE SENTENCIAS SQL + JDBC -->
+    <section id="simulador-jdbc" class="border-b border-ink/10 bg-paper">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-emerald">Simulador JDBC + SQL en Tiempo Real</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">Prueba las operaciones de <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code> contra la tabla SQL</h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Observa qué sentencia SQL prepara <code class="font-mono text-sm">PreparedStatement</code>, cómo se enlazan los signos <code class="font-mono text-sm">?</code> y qué ocurre cuando insertas una fila nueva, intentas duplicar la clave primaria, actualizas o eliminas:
+          </p>
+        </div>
+
+        <div class="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div class="pro-card space-y-4">
+            <h3 class="text-base font-bold">Acciones del DAO JDBC (<span class="domain-title-name">Vehículo</span>)</h3>
+            <p class="text-xs leading-5 text-ink/70">
+              Pulsa <strong>Ejecutar simulación</strong> repetidas veces para observar primero el <code class="font-mono">INSERT</code> exitoso y luego el rechazo por clave primaria duplicada (<code class="font-mono">SQLException</code>), o prueba cada operación individual:
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button id="run-db" type="button" class="rounded-xl bg-accent px-4 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-accent/90">
+                ▶ Ejecutar simulación (INSERT + SELECT)
+              </button>
+              <button id="run-db-update" type="button" class="rounded-xl border border-ink/20 bg-white px-3.5 py-2.5 text-xs font-semibold hover:bg-paper">
+                Simular UPDATE
+              </button>
+              <button id="run-db-delete" type="button" class="rounded-xl border border-rose-300 bg-rose-50 px-3.5 py-2.5 text-xs font-semibold text-rose-900">
+                Simular DELETE
+              </button>
+            </div>
+            <div class="rounded-xl border border-ink/10 bg-paper p-3.5 text-xs leading-5 text-ink/75">
+              <strong>Recuerda:</strong> En <code class="font-mono">PreparedStatement</code>, los parámetros <code class="font-mono">?</code> se numeran desde el <strong>1</strong> (no desde el 0).
+            </div>
+          </div>
+
+          <div class="code-window p-5">
+            <div class="flex items-center justify-between border-b border-white/15 pb-3">
+              <span class="font-mono text-xs uppercase tracking-wider text-white/60">Traza de Ejecución JDBC → Motor SQL</span>
+              <span class="rounded-full bg-lime px-2.5 py-0.5 font-mono text-[11px] font-bold text-ink">PreparedStatement</span>
+            </div>
+            <pre id="db-output" role="status" class="mt-4 whitespace-pre-wrap break-words rounded-lg bg-white/10 p-4 font-mono text-xs leading-6 text-lime">Los resultados aparecerán aquí.</pre>
+          </div>
+        </div>
+
+        <!-- Guías de configuración en NetBeans (MySQL y Supabase) -->
+        <div id="guias-netbeans" class="mt-10 grid gap-6 lg:grid-cols-2">
+          <details id="mysql-setup" open class="pro-card">
+            <summary class="cursor-pointer text-lg font-bold">🐬 Guía paso a paso: Ejecutar en NetBeans con MySQL Local</summary>
+            <ol class="mt-4 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-ink/75">
+              <li>En NetBeans, elige <strong>File → New Project → Java with Maven → Java Application</strong>.</li>
+              <li>Abre <code class="font-mono">esquema.sql</code> en <strong>MySQL Workbench</strong> o phpMyAdmin y ejecútalo para crear la base de datos y la tabla <code class="domain-table-name font-mono">vehiculo</code>.</li>
+              <li>Copia la dependencia <code class="font-mono">mysql-connector-j</code> al <code class="font-mono">pom.xml</code> y crea las clases <code class="font-mono">ConexionBD</code>, <code class="domain-model-name font-mono">Vehiculo</code> y <code class="domain-dao-name font-mono">VehiculoDAO</code>.</li>
+              <li>Verifica en <code class="font-mono">ConexionBD.java</code> el puerto (<code class="font-mono">3306</code>), usuario (<code class="font-mono">root</code>) y la contraseña de tu servidor MySQL local.</li>
+              <li>Ejecuta la clase principal y comprueba los registros insertados con <code class="font-mono">SELECT * FROM <span class="domain-table-name">vehiculo</span>;</code>.</li>
+            </ol>
+          </details>
+
+          <details id="supabase-setup" open hidden class="pro-card">
+            <summary class="cursor-pointer text-lg font-bold">⚡ Guía paso a paso: Ejecutar en NetBeans con Supabase (PostgreSQL)</summary>
+            <ol class="mt-4 list-decimal space-y-2.5 pl-5 text-sm leading-6 text-ink/75">
+              <li>En el panel de tu proyecto Supabase, abre <strong>SQL Editor</strong> y ejecuta el contenido de <code class="font-mono">esquema.sql</code>.</li>
+              <li>Haz clic en <strong>Connect → Session pooler</strong> para obtener el host, puerto (<code class="font-mono">5432</code>) y usuario de conexión.</li>
+              <li>Configura las siguientes variables de entorno en tu sistema o en las propiedades de ejecución de NetBeans:</li>
+            </ol>
+            <pre class="mt-3 overflow-x-auto rounded-xl bg-ink p-4 font-mono text-xs leading-5 text-lime"><code>SUPABASE_DB_URL=jdbc:postgresql://HOST_DEL_POOLER:5432/postgres?sslmode=require
 SUPABASE_DB_USER=postgres.REFERENCIA_DEL_PROYECTO
 SUPABASE_DB_PASSWORD=CONTRASEÑA_DE_LA_BASE</code></pre>
-        <p class="mt-2 text-sm leading-6">Abre el proyecto Maven con el <code>pom.xml</code> de Supabase, copia los archivos Java y ejecuta la clase principal. Comprueba la fila con el <code>SELECT</code> del esquema en el SQL Editor.</p>
-        <a class="mt-3 inline-block text-sm underline" href="https://supabase.com/docs/guides/database/connecting-to-postgres">Documentación de conexión a PostgreSQL en Supabase</a>
-      </details>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 6: 6 EJERCICIOS PRÁCTICOS DINÁMICOS DE BASE DE DATOS Y JDBC -->
+    <section id="ejercicios-bd" class="border-b border-ink/10 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
+        <div class="max-w-3xl">
+          <span class="pro-badge pro-badge-indigo">Paso 06 · Práctica Guiada con SQL y JDBC</span>
+          <h2 class="mt-3 text-2xl font-bold tracking-tight sm:text-4xl">6 Ejercicios Prácticos de JDBC para <code class="domain-dao-name font-mono text-accent">VehiculoDAO</code></h2>
+          <p class="mt-3 text-base leading-7 text-ink/70">
+            Resuelve estos 6 ejercicios progresivos adaptados al dominio <strong class="domain-title-name">Vehículo</strong> y su tabla SQL <code class="domain-table-name font-mono text-sm">vehiculo</code>:
+          </p>
+        </div>
+
+        <div id="db-exercises-grid" class="mt-8 grid gap-6 lg:grid-cols-2"></div>
+
+        <div class="mt-10 flex flex-col items-start justify-between gap-4 rounded-3xl bg-ink p-7 text-white sm:flex-row sm:items-center sm:p-9">
+          <div>
+            <span class="font-mono text-xs uppercase tracking-widest text-lime">Recorrido Completo Finalizado</span>
+            <h3 class="mt-2 text-xl font-bold sm:text-2xl">Has recorrido las 4 capas de <span class="domain-title-name text-lime">Vehículo</span>: Modelo → DAO → JUnit → Base de Datos</h3>
+            <p class="mt-1 text-sm text-white/70">Puedes cambiar de dominio en la barra superior para practicar toda la arquitectura con otro caso de estudio.</p>
+          </div>
+          <a data-page="index.html" href="index.html" class="shrink-0 rounded-full bg-lime px-6 py-3 text-sm font-bold text-ink no-underline transition hover:brightness-95">
+            ↺ Volver a 01 Modelo
+          </a>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer class="border-t border-ink/10">
-    <div class="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-6 text-xs text-ink/50 sm:flex-row sm:items-center sm:justify-between">
-      <p>Laboratorio de modelos y DAO en Java · basado en Automotora</p>
-      <p>Guía de Java · Modelo, DAO, JUnit y bases de datos</p>
+  <footer class="border-t border-ink/10 bg-white">
+    <div class="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-ink/60 sm:px-6">
+      <nav aria-label="Mapa de módulos del curso Java" class="seo-footer-links">
+        <a data-page="index.html" href="index.html">01 Modelo POO en Java</a>
+        <a data-page="proyecto.html" href="proyecto.html">02 Patrón DAO con ArrayList</a>
+        <a data-page="junit.html" href="junit.html">03 Pruebas Unitarias JUnit 5 y JaCoCo</a>
+        <a data-page="base-datos.html" href="base-datos.html">04 Base de Datos JDBC (MySQL y Supabase)</a>
+        <a href="sitemap.xml">Sitemap XML</a>
+      </nav>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p><strong>Guía Interactiva Java 17</strong> · Arquitectura en capas (Modelo POO, DAO, JUnit 5 y JDBC SQL)</p>
+        <p>Optimizado para estudio en Web y Móvil · Java 17 + Maven + NetBeans</p>
+      </div>
     </div>
   </footer>
 </body>
